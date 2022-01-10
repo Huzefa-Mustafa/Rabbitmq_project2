@@ -1,6 +1,7 @@
 package com.project2;
 import com.rabbitmq.client.BuiltinExchangeType;
 import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.DeliverCallback;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
@@ -60,6 +61,15 @@ public class TopicExchange {
      */
     public static void subscribeMessage() throws IOException, TimeoutException {
         Channel channel = ConnectionManager.getConnection().createChannel();
+        DeliverCallback deliverCallback =(consumerTag,delivery)->{
+            System.out.println("\n\n=========== Health Queue ==========");
+            String message = new String(delivery.getBody(), "UTF-8");
+            System.out.println("HealthQ: " + new String(delivery.getBody()));
+            System.out.println(" [x] Received '" +
+                    delivery.getEnvelope().getRoutingKey() + "':'" + message + "'");
+        };
+        channel.basicConsume("HealthQ", true, deliverCallback, consumerTag -> { });
+
         channel.basicConsume("HealthQ", true, ((consumerTag, message) -> {
             System.out.println("\n\n=========== Health Queue ==========");
             System.out.println(consumerTag);

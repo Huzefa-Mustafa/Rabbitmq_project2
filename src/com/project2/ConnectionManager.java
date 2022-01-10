@@ -25,9 +25,10 @@ public class ConnectionManager {
                 factory.setPort(5672);
                 connection = factory.newConnection();// connection interface used to open channel
             } catch (IOException | TimeoutException e) {
+                System.out.println("Connection to Server is lost!!!!");
                 e.printStackTrace();
             }
-        }else{ System.out.println("Server is down at Moment");}
+        }
 
         return connection;
     }

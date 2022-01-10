@@ -2,8 +2,10 @@ package com.project2;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.DeliverCallback;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeoutException;
 public class Main {
     /**
@@ -14,43 +16,61 @@ public class Main {
      * @throws TimeoutException
      */
     public static void main(String[] args) throws IOException, TimeoutException{
+//        connectionRabbit();
         consoleInterface();
-        connectionRabbit();
         TopicExchange.declareExchange();
         TopicExchange.declareQueues();
         TopicExchange.declareBindings();
 
-        Thread subscribe = new Thread(() -> {
-            try {
-                TopicExchange.subscribeMessage();
-            } catch (IOException | TimeoutException e) {
-                e.printStackTrace();
-            }
-        });
 
         Thread publish = new Thread(() -> {
             try {
-                TopicExchange.publishMessage();
-            } catch (IOException | TimeoutException e) {
+                Channel channel = ConnectionManager.getConnection().createChannel();
+                String message = "Drink a lot of Water and stay Healthy!";
+                System.out.println("At producer");
+                //channel.basicPublish("my-topic-exchange", "sports.sports.sports", null, message.getBytes());
+                channel.basicPublish("my-topic-exchange", "health.education", null, message.getBytes());
+                System.out.println(" [x] Sent '" + "health.education" + "':'" + message + "'");
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         });
-        subscribe.start();
+        Thread subscribe = new Thread(() -> {
+            try {
+                Channel channel = ConnectionManager.getConnection().createChannel();
+                DeliverCallback deliverCallback =(consumerTag, delivery)->{
+                    System.out.println("At consumer");
+                    System.out.println("\n\n=========== Health Queue ==========");
+                    String message = new String(delivery.getBody(), StandardCharsets.UTF_8);
+                    System.out.println("HealthQ: " + new String(delivery.getBody()));
+                    System.out.println(" [x] Received '" +
+                            delivery.getEnvelope().getRoutingKey() + "':'" + message + "'");
+                };
+                channel.basicConsume("HealthQ", true, deliverCallback, consumerTag -> { });
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
         publish.start();
+        subscribe.start();
     }
 
-    private static void connectionRabbit() throws IOException, TimeoutException {
-        //Creating a connection to the server
-        ConnectionFactory factory = new ConnectionFactory();
-        // Inserting the data of RabbitMQ administration account
-        factory.setUsername("studentx");
-        factory.setPassword("studentx");
+    private static void connectionRabbit() {
+       try {
+           //Creating a connection to the server
+           ConnectionFactory factory = new ConnectionFactory();
+           // Inserting the data of RabbitMQ administration account
+           factory.setUsername("studentx");
+           factory.setPassword("studentx");
 
-        // Inserting the IP of the machine where the server is running
-        factory.setHost("127.0.0.1");
-        factory.setPort(5672);
-        Connection connection = factory.newConnection();// connection interface used to open channel
-        Channel channel = connection.createChannel(); // the channel can now be used to send and receive message
+           // Inserting the IP of the machine where the server is running
+           factory.setHost("127.0.0.1");
+           factory.setPort(5672);
+           Connection connection = factory.newConnection();
+           Channel channel = connection.createChannel();
+       } catch (IOException | TimeoutException e) {
+           System.out.println("Server is down at Moment");
+       }
     }
 
     private static void consoleInterface() {
