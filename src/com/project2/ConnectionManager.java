@@ -14,12 +14,21 @@ public class ConnectionManager {
     public static Connection getConnection(){
         if (connection == null) {
             try {
-                ConnectionFactory connectionFactory = new ConnectionFactory();
-                connection = connectionFactory.newConnection("amqp://guest:guest@localhost:5672/");
+                //Creating a connection to the server
+                ConnectionFactory factory = new ConnectionFactory();
+                // Inserting the data of RabbitMQ administration account
+                factory.setUsername("studentx");
+                factory.setPassword("studentx");
+
+                // Inserting the IP of the machine where the server is running
+                factory.setHost("127.0.0.1");
+                factory.setPort(5672);
+                connection = factory.newConnection();// connection interface used to open channel
             } catch (IOException | TimeoutException e) {
                 e.printStackTrace();
             }
-        }
+        }else{ System.out.println("Server is down at Moment");}
+
         return connection;
     }
 }
