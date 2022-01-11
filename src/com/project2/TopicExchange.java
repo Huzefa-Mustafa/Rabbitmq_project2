@@ -17,7 +17,7 @@ public class TopicExchange {
     public static void declareExchange() throws IOException, TimeoutException {
         Channel channel = ConnectionManager.getConnection().createChannel();
         //Create Topic Exchange
-        channel.exchangeDeclare(EXCHANGE_NAME, "true");
+        channel.exchangeDeclare(EXCHANGE_NAME, "topic");
 //        channel.close();
     }
 
