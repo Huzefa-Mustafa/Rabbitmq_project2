@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class DataHolder {
     String queueName;
     String routingKey;
-
+    String consumerTag;
     public DataHolder(String queueName, String routingKey) {
         this.queueName = queueName;
         this.routingKey = routingKey;
@@ -13,7 +13,12 @@ public class DataHolder {
     public String getQueueName() {
         return queueName;
     }
-
+    public String getConsumerTag() {
+        return consumerTag;
+    }
+    public void setConsumerTag(String consumerTag) {
+        this.consumerTag = consumerTag;
+    }
     public void setQueueName(String queueName) {
         this.queueName = queueName;
     }

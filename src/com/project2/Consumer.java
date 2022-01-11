@@ -1,6 +1,7 @@
 package com.project2;
 
 import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.DefaultConsumer;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
@@ -18,13 +19,33 @@ public class Consumer {
 //        TopicExchange.declareExchange();
         String queueName = TopicExchange.declareQueues(dataHolder.getRoutingKey());
         Channel channel = ConnectionManager.getConnection().createChannel();
+//        String consumerTag = UUID.randomUUID().toString();
         channel.basicConsume(queueName, true, ((consumerTag, delivery) -> {
             System.out.println("\n\n=========== "+ dataHolder.getRoutingKey() +" Tags ==========");
             String message = new String(delivery.getBody(), "UTF-8");
             System.out.println(" [x] Received '" +
                     delivery.getEnvelope().getRoutingKey() + "':'" + message + "'");
+            System.out.println("Consumer Tag: " + consumerTag);
+            dataHolder.setConsumerTag(consumerTag);
         }), consumerTag -> {
-            System.out.println(consumerTag);
+            System.out.println("Consumer Tag: " + consumerTag);
         });
+    }
+
+    public static void unsubscribeBlogs(DataHolder dataHolder) throws IOException, TimeoutException {
+        Channel channel =ConnectionManager.getConnection().createChannel();
+        System.out.println("test");
+
+        System.out.println(dataHolder.getConsumerTag());
+        channel.basicCancel(dataHolder.getConsumerTag());
+
+/*        Consumer consumer = new DefaultConsumer(channel) {
+            @Override
+            public void handleCancel(String consumerTag) throws IOException {
+                // consumer has been cancelled unexpectedly
+                System.out.println(consumerTag);
+            }
+        };
+        channel.basicConsume(dataHolder.getQueueName(), consumer);*/
     }
 }

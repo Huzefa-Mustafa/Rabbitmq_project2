@@ -44,8 +44,8 @@ public class Main {
         System.out.println("|Options:                       |");
         System.out.println("|       1.Publish to blogs      |");
         System.out.println("|       2.Subscribe to blogs    |");
-        System.out.println("|       2.Create new blog       |");
-        System.out.println("|       3.Delete blogs          |");
+        System.out.println("|       3.Create new blog       |");
+        System.out.println("|       4.Unsubscribe to blogs  |");
         System.out.println("|       0.Exit                  |");
         System.out.println("=================================");
 
@@ -65,11 +65,31 @@ public class Main {
             System.out.println(" [x] Please enter a suitable name for your blog:");
             String blogName = scanner.nextLine();
             System.out.println(" [x] Please add tags with spaces related to '" + blogName + "':");
-            String blogName = scanner.nextLine();
+            String blogName2 = scanner.nextLine();
             new FanOutProducer();
+        } else if (choice == 4) {
+            DataHolder selectedTag = unsubscribeBlogs();
+            Consumer.unsubscribeBlogs(selectedTag);
         }
 
     }
+
+    private static DataHolder unsubscribeBlogs() throws IOException {
+        System.out.println("|Select topics          |");
+        for (int i = 0; i < dataHolderList.size(); i++) {
+            System.out.println("|       " + (i + 1) + "." + dataHolderList.get(i).getRoutingKey() + "       ");
+        }
+        String input = scanner.nextLine();
+        if (checkIfDigit(input)) {
+            choice = Integer.parseInt(input);
+            DataHolder dataHolder = dataHolderList.get(choice - 1);
+            return dataHolder;
+        } else choice = 10;
+//        channel = consumer.getChannel();
+//        channel.basicCancel(this.consumerTag);
+        return null;
+    }
+
     private static DataHolder subscribeToBlogs(){
         System.out.println("|Select topics          |");
         for (int i = 0; i < dataHolderList.size(); i++) {
@@ -84,7 +104,6 @@ public class Main {
         return null;
     }
     private static DataHolder blogs() throws IOException, TimeoutException {
-//        test();
 
         System.out.println("|Select topics          |");
         for (int i = 0; i < dataHolderList.size(); i++) {
