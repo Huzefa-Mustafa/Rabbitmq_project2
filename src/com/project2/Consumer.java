@@ -8,6 +8,23 @@ import java.util.concurrent.TimeoutException;
 
 public class Consumer {
     private static final String EXCHANGE_NAME = "topic_logs";
+    /**
+     * Assign Consumers to each of the Queue.
+     *
+     * @throws IOException
+     * @throws TimeoutException
+     */
+    public static void subscribeMessage(String queueName) throws IOException, TimeoutException {
+        Channel channel = ConnectionManager.getConnection().createChannel();
+        channel.basicConsume(queueName, true, ((consumerTag, message) -> {
+            System.out.println("\n\n=========== "+ queueName +" Queue ==========");
+            System.out.println(consumerTag);
+            System.out.println(queueName+": " + new String(message.getBody()));
+            System.out.println(message.getEnvelope());
+        }), consumerTag -> {
+            System.out.println(consumerTag);
+        });
+    }
     public Consumer() throws IOException, TimeoutException {
         try {
             //Creating connection the server
