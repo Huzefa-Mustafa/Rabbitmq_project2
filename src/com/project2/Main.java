@@ -21,8 +21,12 @@ public class Main {
         TopicExchange.declareQueues();
         TopicExchange.declareBindings();*/
 //        consoleInterface();
-        producer();
-        consumer();
+
+        /*producer();
+        consumer();*/
+
+        new Producer();
+        new Consumer();
 
 
 /*        Thread publish = new Thread(() -> {
