@@ -38,14 +38,16 @@ public class Main {
     }
 
     private static void menuApp() {
-        System.out.println("=========================");
-        System.out.println("|        APP MENU       |");
-        System.out.println("=========================");
-        System.out.println("|Options:               |");
-        System.out.println("|       1.Publish Blogs |");
-        System.out.println("|       2.Read Blogs    |");
-        System.out.println("|       0.Exit          |");
-        System.out.println("=========================");
+        System.out.println("=================================");
+        System.out.println("|           APP MENU            |");
+        System.out.println("=================================");
+        System.out.println("|Options:                       |");
+        System.out.println("|       1.Publish to blogs      |");
+        System.out.println("|       2.Subscribe to blogs    |");
+        System.out.println("|       2.Create new blog       |");
+        System.out.println("|       3.Delete blogs          |");
+        System.out.println("|       0.Exit                  |");
+        System.out.println("=================================");
 
     }
 
@@ -60,6 +62,10 @@ public class Main {
             DataHolder selectedTag = subscribeToBlogs();
             Consumer.subscribeMessage(selectedTag);
         } else if (choice == 3) {
+            System.out.println(" [x] Please enter a suitable name for your blog:");
+            String blogName = scanner.nextLine();
+            System.out.println(" [x] Please add tags with spaces related to '" + blogName + "':");
+            String blogName = scanner.nextLine();
             new FanOutProducer();
         }
 
