@@ -75,7 +75,7 @@ public class Main {
 
         System.out.println("|Select topics          |");
         for (int i = 0; i < dataHolderList.size(); i++) {
-            System.out.println("|       " + (i+1) + "." + dataHolderList.get(i).getQueueName() +"       |");
+            System.out.println("|       " + (i+1) + "." + dataHolderList.get(i).getQueueName() +"       ");
         }
 //        System.out.println("|       1.HealthQ       |");
 //        System.out.println("|       2.SportsQ       |");
