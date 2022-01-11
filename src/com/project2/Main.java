@@ -23,11 +23,10 @@ public class Main {
 
         System.out.println("Before"+dataHolderList.size());
         declareQueues();
-//        declareBindings();
         new FanOutProducer();
         new FanOutConsumer();
         System.out.println("After"+dataHolderList.size());
-//        consoleInterface();
+        consoleInterface();
     }
     private static void consoleInterface() throws IOException, TimeoutException {
         while (true) {
@@ -72,12 +71,15 @@ public class Main {
     }
 
     private static void blogs() throws IOException {
-        test();
+//        test();
 
         System.out.println("|Select topics          |");
-        System.out.println("|       1.HealthQ       |");
-        System.out.println("|       2.SportsQ       |");
-        System.out.println("|       3.EducationQ    |");
+        for (int i = 0; i < dataHolderList.size(); i++) {
+            System.out.println("|       " + (i+1) + "." + dataHolderList.get(i).getQueueName() +"       |");
+        }
+//        System.out.println("|       1.HealthQ       |");
+//        System.out.println("|       2.SportsQ       |");
+//        System.out.println("|       3.EducationQ    |");
         String input = scanner.nextLine();
         if (checkIfDigit(input)) choice = Integer.parseInt(input);
         else choice = 10;
