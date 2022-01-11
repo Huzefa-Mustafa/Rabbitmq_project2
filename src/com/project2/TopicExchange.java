@@ -1,7 +1,6 @@
 package com.project2;
-import com.rabbitmq.client.BuiltinExchangeType;
+
 import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.DeliverCallback;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
@@ -56,68 +55,4 @@ public class TopicExchange {
         channel.close();
     }
 
-    /**
-     * Assign Consumers to each of the Queue.
-     *
-     * @throws IOException
-     * @throws TimeoutException
-     */
-    public static void subscribeMessage() throws IOException, TimeoutException {
-        Channel channel = ConnectionManager.getConnection().createChannel();
-        DeliverCallback deliverCallback =(consumerTag,delivery)->{
-            System.out.println("\n\n=========== Health Queue ==========");
-            String message = new String(delivery.getBody(), "UTF-8");
-            System.out.println("HealthQ: " + new String(delivery.getBody()));
-            System.out.println(" [x] Received '" +
-                    delivery.getEnvelope().getRoutingKey() + "':'" + message + "'");
-        };
-        channel.basicConsume("HealthQ", true, deliverCallback, consumerTag -> { });
-
-        channel.basicConsume("HealthQ", true, ((consumerTag, message) -> {
-            System.out.println("\n\n=========== Health Queue ==========");
-            System.out.println(consumerTag);
-            System.out.println("HealthQ: " + new String(message.getBody()));
-            System.out.println(message.getEnvelope());
-        }), consumerTag -> {
-            System.out.println(consumerTag);
-        });
-
-        channel.basicConsume("SportsQ", true, ((consumerTag, message) -> {
-            System.out.println("\n\n ============ Sports Queue ==========");
-            System.out.println(consumerTag);
-            System.out.println("SportsQ: " + new String(message.getBody()));
-            System.out.println(message.getEnvelope());
-        }), consumerTag -> {
-            System.out.println(consumerTag);
-        });
-
-        channel.basicConsume("EducationQ", true, ((consumerTag, message) -> {
-            System.out.println("\n\n ============ Education Queue ==========");
-            System.out.println(consumerTag);
-            System.out.println("EducationQ: " + new String(message.getBody()));
-            System.out.println(message.getEnvelope());
-        }), consumerTag -> {
-            System.out.println(consumerTag);
-        });
-    }
-    /**
-     * Publish Messages with different routing keys.
-     *
-     * @throws IOException
-     * @throws TimeoutException
-     */
-    public static void publishMessage() throws IOException, TimeoutException {
-        Channel channel = ConnectionManager.getConnection().createChannel();
-        String message = "Drink a lot of Water and stay Healthy!";
-        //channel.basicPublish("my-topic-exchange", "sports.sports.sports", null, message.getBytes());
-        channel.basicPublish("my-topic-exchange", "health.education", null, message.getBytes());
-
-        message = "Learn something new everyday";
-        channel.basicPublish("my-topic-exchange", "education", null, message.getBytes());
-
-        message = "Stay fit in Mind and Body";
-        channel.basicPublish("my-topic-exchange", "education.health", null, message.getBytes());
-
-        channel.close();
-    }
 }

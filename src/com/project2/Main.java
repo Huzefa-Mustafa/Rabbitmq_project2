@@ -1,5 +1,6 @@
 package com.project2;
-import com.rabbitmq.client.*;
+
+import com.rabbitmq.client.Channel;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,15 +20,16 @@ public class Main {
     static int choice;
     private static final String EXCHANGE_TOPIC = "topic_logs";
 
-    public static void main(String[] args) throws IOException, TimeoutException{
+    public static void main(String[] args) throws IOException, TimeoutException {
 
-        System.out.println("Before"+dataHolderList.size());
+        System.out.println("Before" + dataHolderList.size());
         declareQueues();
         new FanOutProducer();
         new FanOutConsumer();
-        System.out.println("After"+dataHolderList.size());
+        System.out.println("After" + dataHolderList.size());
         consoleInterface();
     }
+
     private static void consoleInterface() throws IOException, TimeoutException {
         while (true) {
             menuApp();
@@ -52,16 +54,9 @@ public class Main {
         if (checkIfDigit(input)) choice = Integer.parseInt(input);
         else choice = 10;
         if (choice == 1) {
-            blogs();
-//            TopicExchange.declareExchange();
-//            TopicExchange.declareQueues();
-//            String message = "Drink a lot of Water and stay Healthy!";
-//            System.out.println("At producer");
-//            String routingKey ="health.education";
-//            Producer.publishMessage(message, routingKey);
+            DataHolder selectedBlog = blogs();
+            Producer.publishMessage(selectedBlog);
         } else if (choice == 2) {
-//            TopicExchange.declareExchange();
-//            Consumer.subscribeMessage("health.*");
             new Consumer();
         } else if (choice == 4) {
             new FanOutProducer();
@@ -69,27 +64,31 @@ public class Main {
 
     }
 
-    private static void blogs() throws IOException {
+    private static DataHolder blogs() throws IOException, TimeoutException {
 //        test();
 
         System.out.println("|Select topics          |");
         for (int i = 0; i < dataHolderList.size(); i++) {
-            System.out.println("|       " + (i+1) + "." + dataHolderList.get(i).getQueueName() +"       ");
+            System.out.println("|       " + (i + 1) + "." + dataHolderList.get(i).getQueueName() + "       ");
         }
-//        System.out.println("|       1.HealthQ       |");
-//        System.out.println("|       2.SportsQ       |");
-//        System.out.println("|       3.EducationQ    |");
         String input = scanner.nextLine();
-        if (checkIfDigit(input)) choice = Integer.parseInt(input);
-        else choice = 10;
-        if (choice == 1) {
-            health();
-        } else if (choice == 2) {
-            sport();
-        } else if (choice == 3) {
-            educationQ();
-        }
+        if (checkIfDigit(input)) {
+            choice = Integer.parseInt(input);
+            DataHolder dataHolder = dataHolderList.get(choice - 1);
+            return dataHolder;
+        } else choice = 10;
+        return null;
+
+//        if (choice == 1) {
+////            health();
+//            Producer.publishMessage("Drink a lot of Water and stay Healthy!","health.education");
+//        } else if (choice == 2) {
+//            Producer.publishMessage("Drink a lot of Water and stay Healthy!","health.education");
+//        } else if (choice == 3) {
+//            Producer.publishMessage("Stay fit in Mind and Body","education.health");
+//        }
     }
+
 
     private static void test() throws IOException {
         System.out.println("test");
@@ -133,13 +132,6 @@ public class Main {
             channel.queueDeclare(dataHolder.getQueueName(), true, false, false, null);
             channel.queueBind(dataHolder.queueName, EXCHANGE_TOPIC, dataHolder.routingKey);
         }
-//        channel.queueDeclare(dhealth.getQueueName(), true, false, false, null);
-//        channel.queueDeclare("SportsQ", true, false, false, null);
-//        channel.queueDeclare("EducationQ", true, false, false, null);
-
-//        channel.queueBind("HealthQ", EXCHANGE_TOPIC, "health.*");
-//        channel.queueBind("SportsQ", EXCHANGE_TOPIC, "#.sports.*");
-//        channel.queueBind("EducationQ", EXCHANGE_TOPIC, "#.education");
 
     }
     public static void declareBindings() throws IOException, TimeoutException {

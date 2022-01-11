@@ -21,7 +21,7 @@ public class ConnectionManager {
                 factory.setPassword("studentx");
 
                 // Inserting the IP of the machine where the server is running
-                factory.setHost("127.0.0.1");
+                factory.setHost("localhost");
                 factory.setPort(5672);
                 connection = factory.newConnection();// connection interface used to open channel
             } catch (IOException | TimeoutException e) {
