@@ -1,6 +1,5 @@
 package com.project2;
 
-import com.rabbitmq.client.BuiltinExchangeType;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -9,7 +8,8 @@ import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
 public class Producer {
-    private static final String EXCHANGE_NAME = "topic_logs";
+    private static final String EXCHANGE_TOPIC = "topic_logs";
+    private static final String EXCHANGE_FANOUT = "logs";
 
     public Producer() throws IOException, TimeoutException {
         //Creating a connection to the server
@@ -24,12 +24,12 @@ public class Producer {
         try (
                 Connection connection = factory.newConnection();
                 Channel channel = connection.createChannel()) {
-            channel.exchangeDeclare(EXCHANGE_NAME,"topic");
+            channel.exchangeDeclare(EXCHANGE_TOPIC,"topic");
 
             String message = "Drink a lot of Water and stay Healthy!";
             System.out.println("At producer");
             String routingKey ="health.education";
-            channel.basicPublish(EXCHANGE_NAME, routingKey, null, message.getBytes("UTF-8"));
+            channel.basicPublish(EXCHANGE_TOPIC, routingKey, null, message.getBytes("UTF-8"));
             System.out.println(" [x] Sent '" + "health.education" + "':'" + message + "'");
 
         }
