@@ -8,10 +8,16 @@ import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
 public class FanOutProducer {
+    private static final String EXCHANGE_TOPIC = "topic_logs";
     private static final String EXCHANGE_FANOUT = "logs";
-    public FanOutProducer() {
+    public FanOutProducer() throws IOException {
         //Creating connection the server
-        ConnectionFactory factory = new ConnectionFactory();
+        Channel channel = ConnectionManager.getConnection().createChannel();
+        channel.exchangeDeclare(EXCHANGE_FANOUT, "fanout");
+        channel.exchangeDeclare(EXCHANGE_TOPIC,"topic");
+        
+
+/*        ConnectionFactory factory = new ConnectionFactory();
 
         //Inserting data of our RabbitMQ administration account
         factory.setUsername("studentx");
@@ -33,6 +39,6 @@ public class FanOutProducer {
 
         } catch (IOException | TimeoutException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 }
