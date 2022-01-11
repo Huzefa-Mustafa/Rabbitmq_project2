@@ -17,20 +17,19 @@ public class FanOutProducer {
 
 
         //Creating connection to the server
-        try (Channel channel = ConnectionManager.getConnection().createChannel()) {
+/*        try (Channel channel = ConnectionManager.getConnection().createChannel()) {
             channel.exchangeDeclare(EXCHANGE_FANOUT, "fanout");
-            channel.exchangeDeclare(EXCHANGE_TOPIC,"topic");
             String msg = new Gson().toJson(dataHolderList);
-            msg.toJSONString(dataHolderList).getBytes();
+
             String message = msg.length() < 1 ? "info: Hello World" :
                     String.join(" ", msg);
 
-            channel.basicPublish(EXCHANGE_FANOUT, "", null, msg.toJSONString().getBytes());
+            channel.basicPublish(EXCHANGE_FANOUT, "info", null, msg.getBytes());
             System.out.println("[x] Sent '" + message + "'");
 
-        }
+        }*/
 
-/*        ConnectionFactory factory = new ConnectionFactory();
+        ConnectionFactory factory = new ConnectionFactory();
 
         //Inserting data of our RabbitMQ administration account
         factory.setUsername("studentx");
@@ -44,14 +43,16 @@ public class FanOutProducer {
         try (Connection connection = factory.newConnection();
              Channel channel = connection.createChannel()) {
             channel.exchangeDeclare(EXCHANGE_FANOUT, "fanout");
-
-            String message = "info: Hello World";
+            String msg = new Gson().toJson(dataHolderList);
+            channel.basicPublish(EXCHANGE_FANOUT, "", null, msg.getBytes());
+            System.out.println("[x] Sent '" + msg + "'");
+            /*String message = "info: Hello World";
 
             channel.basicPublish(EXCHANGE_FANOUT, "", null, message.getBytes("UTF-8"));
-            System.out.println("[x] Sent '" + message + "'");
+            System.out.println("[x] Sent '" + message + "'");*/
 
         } catch (IOException | TimeoutException e) {
             e.printStackTrace();
-        }*/
+        }
     }
 }

@@ -22,7 +22,10 @@ public class Main {
     public static void main(String[] args) throws IOException, TimeoutException{
         declareQueues();
 //        declareBindings();
-        consoleInterface();
+        new FanOutProducer();
+        new Consumer();
+//        new FanOutConsumer();
+//        consoleInterface();
     }
     private static void consoleInterface() throws IOException, TimeoutException {
         while (true) {
