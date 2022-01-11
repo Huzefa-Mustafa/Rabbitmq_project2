@@ -18,7 +18,7 @@ public class TopicExchange {
         Channel channel = ConnectionManager.getConnection().createChannel();
         //Create Topic Exchange
         channel.exchangeDeclare(EXCHANGE_NAME, "true");
-        channel.close();
+//        channel.close();
     }
 
     /**
@@ -38,7 +38,7 @@ public class TopicExchange {
 //        channel.queueDeclare("SportsQ", true, false, false, null);
 //        channel.queueDeclare("EducationQ", true, false, false, null);
 
-        channel.close();
+//        channel.close();
         return queueName;
     }
     /**
