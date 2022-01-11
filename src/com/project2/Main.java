@@ -20,10 +20,13 @@ public class Main {
     private static final String EXCHANGE_TOPIC = "topic_logs";
 
     public static void main(String[] args) throws IOException, TimeoutException{
+
+        System.out.println("Before"+dataHolderList.size());
         declareQueues();
 //        declareBindings();
         new FanOutProducer();
         new FanOutConsumer();
+        System.out.println("After"+dataHolderList.size());
 //        consoleInterface();
     }
     private static void consoleInterface() throws IOException, TimeoutException {
@@ -115,6 +118,7 @@ public class Main {
     public static void declareQueues() throws IOException, TimeoutException {
         //Create a channel - do not share the Channel instance
         Channel channel = ConnectionManager.getConnection().createChannel();
+        TopicExchange.declareExchange();
 
         DataHolder dhealth = new DataHolder("HealthQ","health.*");
         DataHolder sportsQ = new DataHolder("SportsQ","#.sports.*");

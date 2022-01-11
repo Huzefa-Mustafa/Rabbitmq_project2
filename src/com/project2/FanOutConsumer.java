@@ -12,6 +12,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
+import static com.project2.Main.dataHolderList;
+
 public class FanOutConsumer {
     private static final String EXCHANGE_FANOUT = "logs";
     public FanOutConsumer() throws IOException, TimeoutException {
@@ -41,6 +43,7 @@ public class FanOutConsumer {
                         delivery.getEnvelope().getRoutingKey() + "':'" + message + "'");
                 DataHolder[] msg = new Gson().fromJson(message,DataHolder[].class);
                 List<DataHolder> list = Arrays.asList(msg);
+                list = dataHolderList;
                 for (DataHolder dataHolder : list) {
                     System.out.println(dataHolder.getQueueName());
                 }
