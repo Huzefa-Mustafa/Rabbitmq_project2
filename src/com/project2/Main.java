@@ -57,13 +57,26 @@ public class Main {
             DataHolder selectedBlog = blogs();
             Producer.publishMessage(selectedBlog);
         } else if (choice == 2) {
-            new Consumer();
-        } else if (choice == 4) {
+            DataHolder selectedTag = subscribeToBlogs();
+            Consumer.subscribeMessage(selectedTag);
+        } else if (choice == 3) {
             new FanOutProducer();
         }
 
     }
-
+    private static DataHolder subscribeToBlogs(){
+        System.out.println("|Select topics          |");
+        for (int i = 0; i < dataHolderList.size(); i++) {
+            System.out.println("|       " + (i + 1) + "." + dataHolderList.get(i).getRoutingKey() + "       ");
+        }
+        String input = scanner.nextLine();
+        if (checkIfDigit(input)) {
+            choice = Integer.parseInt(input);
+            DataHolder dataHolder = dataHolderList.get(choice - 1);
+            return dataHolder;
+        } else choice = 10;
+        return null;
+    }
     private static DataHolder blogs() throws IOException, TimeoutException {
 //        test();
 
