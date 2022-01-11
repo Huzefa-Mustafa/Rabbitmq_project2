@@ -33,12 +33,36 @@ public class Consumer {
     }
 
     public static void unsubscribeBlogs(DataHolder dataHolder) throws IOException, TimeoutException {
-        Channel channel =ConnectionManager.getConnection().createChannel();
+
         System.out.println("test");
 
-        System.out.println(dataHolder.getConsumerTag());
-        channel.basicCancel(dataHolder.getConsumerTag());
 
+
+        String queueName = TopicExchange.declareQueues(dataHolder.getRoutingKey());
+        Channel channel = ConnectionManager.getConnection().createChannel();
+//        String consumerTag = UUID.randomUUID().toString();
+        try {
+            channel.basicConsume(queueName, false, ((consumerTag, delivery) -> {
+                System.out.println("\n\n=========== "+ dataHolder.getRoutingKey() +" Tags ==========");
+
+                System.out.println(" [x] Unsubscribed '" +
+                        delivery.getEnvelope().getRoutingKey() + "':'"  );
+                System.out.println("Consumer Tag: " + consumerTag);
+                channel.basicCancel(consumerTag);
+            }), consumerTag -> {
+                System.out.println("Consumer Tag: " + consumerTag);
+            });
+        } catch (IOException e) {
+            System.out.println("Error");
+        }
+
+        System.out.println(dataHolder.getConsumerTag());
+        channel.basicCancel(queueName, false, ((consumerTag, delivery) -> {
+        try {
+            channel.basicCancel(dataHolder.getConsumerTag());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 /*        Consumer consumer = new DefaultConsumer(channel) {
             @Override
             public void handleCancel(String consumerTag) throws IOException {
