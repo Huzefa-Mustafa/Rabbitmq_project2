@@ -20,7 +20,7 @@ public class Main {
 /*        TopicExchange.declareExchange();
         TopicExchange.declareQueues();
         TopicExchange.declareBindings();*/
-//        consoleInterface();
+        consoleInterface();
 
         /*producer();
         consumer();*/
@@ -103,10 +103,12 @@ public class Main {
         if (checkIfDigit(input)) choice = Integer.parseInt(input);
         else choice = 10;
         if (choice == 1) {
-            producer();
+            new Producer();
 
         } else if (choice == 2) {
-            consumer();
+            new Consumer();
+        } else if (choice == 4) {
+            new FanOutProducer();
         }
 
     }
