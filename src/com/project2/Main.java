@@ -103,10 +103,17 @@ public class Main {
         if (checkIfDigit(input)) choice = Integer.parseInt(input);
         else choice = 10;
         if (choice == 1) {
-            new Producer();
+            TopicExchange.declareExchange();
+//            TopicExchange.declareQueues();
+            String message = "Drink a lot of Water and stay Healthy!";
+            System.out.println("At producer");
+            String routingKey ="health.education";
+            Producer.publishMessage(message, routingKey);
 
         } else if (choice == 2) {
-            new Consumer();
+            TopicExchange.declareExchange();
+            String queueName = TopicExchange.declareQueues();
+            Consumer.subscribeMessage(queueName);
         } else if (choice == 4) {
             new FanOutProducer();
         }
