@@ -2,6 +2,7 @@ package com.project2;
 import com.rabbitmq.client.*;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 import java.util.concurrent.TimeoutException;
@@ -15,70 +16,13 @@ public class Main {
      */
     static Scanner scanner = new Scanner(System.in);
     static int choice;
+    private static final String EXCHANGE_TOPIC = "topic_logs";
+
     public static void main(String[] args) throws IOException, TimeoutException{
-//        connectionRabbit();
-/*        TopicExchange.declareExchange();
-        TopicExchange.declareQueues();
-        TopicExchange.declareBindings();*/
+        declareQueues();
+        declareBindings();
         consoleInterface();
-
-        /*producer();
-        consumer();*/
-
-        new Producer();
-        new Consumer();
-
-
-/*        Thread publish = new Thread(() -> {
-            try {
-                Channel channel = ConnectionManager.getConnection().createChannel();
-                String message = "Drink a lot of Water and stay Healthy!";
-                System.out.println("At producer");
-                //channel.basicPublish("my-topic-exchange", "sports.sports.sports", null, message.getBytes());
-                channel.basicPublish("my-topic-exchange", "health.education", null, message.getBytes());
-                System.out.println(" [x] Sent '" + "health.education" + "':'" + message + "'");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-        Thread subscribe = new Thread(() -> {
-            try {
-                Channel channel = ConnectionManager.getConnection().createChannel();
-                DeliverCallback deliverCallback =(consumerTag, delivery)->{
-                    System.out.println("At consumer");
-                    System.out.println("\n\n=========== Health Queue ==========");
-                    String message = new String(delivery.getBody(), StandardCharsets.UTF_8);
-                    System.out.println("HealthQ: " + new String(delivery.getBody()));
-                    System.out.println(" [x] Received '" +
-                            delivery.getEnvelope().getRoutingKey() + "':'" + message + "'");
-                };
-                channel.basicConsume("HealthQ", true, deliverCallback, consumerTag -> { });
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-        publish.start();
-        subscribe.start();*/
     }
-
-    private static void connectionRabbit() {
-       try {
-           //Creating a connection to the server
-           ConnectionFactory factory = new ConnectionFactory();
-           // Inserting the data of RabbitMQ administration account
-           factory.setUsername("studentx");
-           factory.setPassword("studentx");
-
-           // Inserting the IP of the machine where the server is running
-           factory.setHost("127.0.0.1");
-           factory.setPort(5672);
-           Connection connection = factory.newConnection();
-           Channel channel = connection.createChannel();
-       } catch (IOException | TimeoutException e) {
-           System.out.println("Server is down at Moment");
-       }
-    }
-
     private static void consoleInterface() throws IOException, TimeoutException {
         while (true) {
             menuApp();
@@ -103,8 +47,7 @@ public class Main {
         if (checkIfDigit(input)) choice = Integer.parseInt(input);
         else choice = 10;
         if (choice == 1) {
-            new Producer();
-
+            blogs();
         } else if (choice == 2) {
             new Consumer();
         } else if (choice == 4) {
@@ -113,59 +56,60 @@ public class Main {
 
     }
 
-    private static void consumer() {
-        try {
-            //Creating connection the server
-            ConnectionFactory factory = new ConnectionFactory();
+    private static void blogs() throws IOException {
 
-            //Inserting data of our RabbitMQ administration account
-            factory.setUsername("studentx");
-            factory.setPassword("studentx");
-
-            //Inserting the IP of a server where machine is running
-            factory.setHost("127.0.0.1");
-            factory.setPort(5672);
-            Connection connection = factory.newConnection();
-            Channel channel = connection.createChannel();
-
-            channel.exchangeDeclare("my-topic-exchange", BuiltinExchangeType.TOPIC,true);
-            channel.queueDeclare("HealthQ", true, false, false, null);
-            channel.queueBind("HealthQ", "my-topic-exchange", "health.*");
-            System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
-            DeliverCallback deliverCallback =(consumerTag, delivery)->{
-                System.out.println("At consumer");
-                System.out.println("\n\n=========== Health Queue ==========");
-                String message = new String(delivery.getBody(), StandardCharsets.UTF_8);
-                System.out.println("HealthQ: " + new String(delivery.getBody()));
-                System.out.println(" [x] Received '" +
-                        delivery.getEnvelope().getRoutingKey() + "':'" + message + "'");
-            };
-            channel.basicConsume("HealthQ", true, deliverCallback, consumerTag -> { });
-        } catch (IOException | TimeoutException e) {
-            e.printStackTrace();
+        System.out.println("|Select topics          |");
+        System.out.println("|       1.HealthQ       |");
+        System.out.println("|       2.SportsQ       |");
+        System.out.println("|       3.EducationQ    |");
+        String input = scanner.nextLine();
+        if (checkIfDigit(input)) choice = Integer.parseInt(input);
+        else choice = 10;
+        if (choice == 1) {
+            health();
+        } else if (choice == 2) {
+            sport();
+        } else if (choice == 3) {
+            educationQ();
         }
     }
 
-    private static void producer() throws IOException, TimeoutException {
-        //Creating a connection to the server
-        ConnectionFactory factory = new ConnectionFactory();
-        // Inserting the data of RabbitMQ administration account
-        factory.setUsername("studentx");
-        factory.setPassword("studentx");
+    private static void educationQ() throws IOException {
+        Channel channel = ConnectionManager.getConnection().createChannel();
+        String message = "Stay fit in Mind and Body";
+        channel.basicPublish("my-topic-exchange", "education.health", null, message.getBytes("UTF-8"));
+    }
 
-        // Inserting the IP of the machine where the server is running
-        factory.setHost("127.0.0.1");
-        factory.setPort(5672);
-        try (Connection connection = factory.newConnection();
-             Channel channel = connection.createChannel()) {
-            channel.exchangeDeclare("my-topic-exchange", BuiltinExchangeType.TOPIC,true);
+    private static void sport() throws IOException {
+        Channel channel = ConnectionManager.getConnection().createChannel();
+        String message = "Learn something new everyday";
+        channel.basicPublish(EXCHANGE_TOPIC, "education", null, message.getBytes("UTF-8"));
+    }
 
-            String message = "Drink a lot of Water and stay Healthy!";
-            System.out.println("At producer");
-            channel.basicPublish("my-topic-exchange", "health.education", null, message.getBytes());
-            System.out.println(" [x] Sent '" + "health.education" + "':'" + message + "'");
+    private static void health() throws IOException {
 
-        }
+        Channel channel = ConnectionManager.getConnection().createChannel();
+        String message = "Drink a lot of Water and stay Healthy!";
+        channel.basicPublish(EXCHANGE_TOPIC, "health.education", null, message.getBytes("UTF-8"));
+    }
+
+    public static void declareQueues() throws IOException, TimeoutException {
+        //Create a channel - do not share the Channel instance
+        Channel channel = ConnectionManager.getConnection().createChannel();
+
+        //Create the Queues
+        channel.queueDeclare("HealthQ", true, false, false, null);
+        channel.queueDeclare("SportsQ", true, false, false, null);
+        channel.queueDeclare("EducationQ", true, false, false, null);
+
+
+    }
+    public static void declareBindings() throws IOException, TimeoutException {
+        Channel channel = ConnectionManager.getConnection().createChannel();
+        //Create bindings - (queue, exchange, routingKey) - routingKey != null
+        channel.queueBind("HealthQ", EXCHANGE_TOPIC, "health.*");
+        channel.queueBind("SportsQ", EXCHANGE_TOPIC, "#.sports.*");
+        channel.queueBind("EducationQ", EXCHANGE_TOPIC, "#.education");
     }
 
     static boolean checkIfDigit(String input) {
