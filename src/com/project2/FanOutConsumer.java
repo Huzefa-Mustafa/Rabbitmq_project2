@@ -1,39 +1,21 @@
 package com.project2;
 
 import com.google.gson.Gson;
-import com.rabbitmq.client.*;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.DeliverCallback;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
-
-public class Consumer {
-    private static final String EXCHANGE_NAME = "topic_logs";
-    /**
-     * Assign Consumers to each of the Queue.
-     *
-     * @throws IOException
-     * @throws TimeoutException
-     */
-    public static void subscribeMessage(String bindingKey ) throws IOException, TimeoutException {
-//        TopicExchange.declareExchange();
-        String queueName = TopicExchange.declareQueues(bindingKey);
-        Channel channel = ConnectionManager.getConnection().createChannel();
-        channel.basicConsume(queueName, true, ((consumerTag, delivery) -> {
-            System.out.println("\n\n=========== "+ queueName +" Queue ==========");
-            String message = new String(delivery.getBody(), "UTF-8");
-            System.out.println(" [x] Received '" +
-                    delivery.getEnvelope().getRoutingKey() + "':'" + message + "'");
-        }), consumerTag -> {
-            System.out.println(consumerTag);
-        });
-    }
+public class FanOutConsumer {
     private static final String EXCHANGE_TOPIC = "topic_logs";
     private static final String EXCHANGE_FANOUT = "logs";
-    public Consumer() throws IOException, TimeoutException {
+    public FanOutConsumer() throws IOException, TimeoutException {
         try {
             //Creating connection the server
             ConnectionFactory factory = new ConnectionFactory();
@@ -49,30 +31,49 @@ public class Consumer {
             Channel channel = connection.createChannel();
 
             channel.exchangeDeclare(EXCHANGE_FANOUT, "fanout");
-            String queueName = channel.queueDeclare().getQueue();
 
+            String queueName = channel.queueDeclare().getQueue();
             channel.queueBind(queueName, EXCHANGE_FANOUT, "");
+
 
             System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                 System.out.println("At consumer");
-
                 String message = new String(delivery.getBody());
+
                 System.out.println(" [x] Received '" +
                         delivery.getEnvelope().getRoutingKey() + "':'" + message + "'");
-                DataHolder[] msg = new Gson().fromJson(message,DataHolder[].class);
-                for (DataHolder dataHolder : msg) {
-                    System.out.println(dataHolder);
-                }
-                List<DataHolder> list = Arrays.asList(msg);
-                System.out.println(" [x] Received '" + message + "'");
-                for (DataHolder dataHolder : list) {
-                    System.out.println(dataHolder);
-                }
             };
             channel.basicConsume(queueName, true, deliverCallback, consumerTag -> { });
         } catch (IOException | TimeoutException e) {
             e.printStackTrace();
+        }
+        System.out.println("AT fanout");
+        try (Channel channel = ConnectionManager.getConnection().createChannel()) {
+            channel.exchangeDeclare(EXCHANGE_FANOUT, "fanout");
+            channel.exchangeDeclare(EXCHANGE_TOPIC,"topic");
+
+            String queueName = channel.queueDeclare().getQueue();
+            channel.queueBind(queueName, EXCHANGE_FANOUT, "info");
+
+            System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
+
+            DeliverCallback deliverCallback = (consumerTag, delivery) ->{
+                System.out.println("AT fanout deliverCallback");
+                String message = new String(delivery.getBody());
+                DataHolder[] msg = new Gson().fromJson(message,DataHolder[].class);
+                for (DataHolder dataHolder : msg) {
+                    System.out.print(dataHolder);
+                }
+                List<DataHolder> list = Arrays.asList(msg);
+                System.out.println(" [x] Received '" + message + "'");
+                for (DataHolder dataHolder : list) {
+                    System.out.print(dataHolder);
+                }
+            };
+            channel.basicConsume(queueName, true, deliverCallback, consumeTag -> {});
+
+
         }
     }
 }
