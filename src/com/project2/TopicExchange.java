@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
 public class TopicExchange {
-
+    private static final String EXCHANGE_NAME = "topic_logs";
     /**
      * Declare a Topic Exchange with the name my-topic-exchange.
      *
@@ -17,8 +17,8 @@ public class TopicExchange {
     public static void declareExchange() throws IOException, TimeoutException {
         Channel channel = ConnectionManager.getConnection().createChannel();
         //Create Topic Exchange
-        channel.exchangeDeclare("my-topic-exchange", BuiltinExchangeType.TOPIC, true);
-        channel.close();
+        channel.exchangeDeclare(EXCHANGE_NAME, "true");
+//        channel.close();
     }
 
     /**
@@ -27,16 +27,19 @@ public class TopicExchange {
      * @throws IOException
      * @throws TimeoutException
      */
-    public static void declareQueues() throws IOException, TimeoutException {
+    public static String declareQueues() throws IOException, TimeoutException {
         //Create a channel - do not share the Channel instance
         Channel channel = ConnectionManager.getConnection().createChannel();
+        String queueName = channel.queueDeclare().getQueue();
 
+        channel.queueBind(queueName, EXCHANGE_NAME, "health.*");
         //Create the Queues
-        channel.queueDeclare("HealthQ", true, false, false, null);
-        channel.queueDeclare("SportsQ", true, false, false, null);
-        channel.queueDeclare("EducationQ", true, false, false, null);
+//        channel.queueDeclare("HealthQ", true, false, false, null);
+//        channel.queueDeclare("SportsQ", true, false, false, null);
+//        channel.queueDeclare("EducationQ", true, false, false, null);
 
-        channel.close();
+//        channel.close();
+        return queueName;
     }
     /**
      * Declare Bindings - register interests using routing key patterns.
@@ -47,9 +50,9 @@ public class TopicExchange {
     public static void declareBindings() throws IOException, TimeoutException {
         Channel channel = ConnectionManager.getConnection().createChannel();
         //Create bindings - (queue, exchange, routingKey) - routingKey != null
-        channel.queueBind("HealthQ", "my-topic-exchange", "health.*");
-        channel.queueBind("SportsQ", "my-topic-exchange", "#.sports.*");
-        channel.queueBind("EducationQ", "my-topic-exchange", "#.education");
+//        channel.queueBind("HealthQ", "my-topic-exchange", "health.*");
+//        channel.queueBind("SportsQ", "my-topic-exchange", "#.sports.*");
+//        channel.queueBind("EducationQ", "my-topic-exchange", "#.education");
         channel.close();
     }
 
