@@ -2,8 +2,6 @@ package com.project2;
 import com.rabbitmq.client.*;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 import java.util.concurrent.TimeoutException;
 public class Main {
@@ -57,6 +55,7 @@ public class Main {
     }
 
     private static void blogs() throws IOException {
+        test();
 
         System.out.println("|Select topics          |");
         System.out.println("|       1.HealthQ       |");
@@ -72,6 +71,12 @@ public class Main {
         } else if (choice == 3) {
             educationQ();
         }
+    }
+
+    private static void test() throws IOException {
+        System.out.println("test");
+        Channel channel = ConnectionManager.getConnection().createChannel();
+
     }
 
     private static void educationQ() throws IOException {
