@@ -23,8 +23,7 @@ public class Main {
         declareQueues();
 //        declareBindings();
         new FanOutProducer();
-        new Consumer();
-//        new FanOutConsumer();
+        new FanOutConsumer();
 //        consoleInterface();
     }
     private static void consoleInterface() throws IOException, TimeoutException {
