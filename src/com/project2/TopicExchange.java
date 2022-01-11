@@ -27,12 +27,12 @@ public class TopicExchange {
      * @throws IOException
      * @throws TimeoutException
      */
-    public static String declareQueues() throws IOException, TimeoutException {
+    public static String declareQueues(String bindingKey) throws IOException, TimeoutException {
         //Create a channel - do not share the Channel instance
         Channel channel = ConnectionManager.getConnection().createChannel();
         String queueName = channel.queueDeclare().getQueue();
 
-        channel.queueBind(queueName, EXCHANGE_NAME, "health.*");
+        channel.queueBind(queueName, EXCHANGE_NAME, bindingKey);
         //Create the Queues
 //        channel.queueDeclare("HealthQ", true, false, false, null);
 //        channel.queueDeclare("SportsQ", true, false, false, null);
