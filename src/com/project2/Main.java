@@ -2,9 +2,12 @@ package com.project2;
 import com.rabbitmq.client.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.concurrent.TimeoutException;
+
 public class Main {
+    final static ArrayList<DataHolder> dataHolderList = new ArrayList<>();
     /**
      * Execute the methods.
      *
@@ -18,7 +21,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException, TimeoutException{
         declareQueues();
-        declareBindings();
+//        declareBindings();
         consoleInterface();
     }
     private static void consoleInterface() throws IOException, TimeoutException {
@@ -46,17 +49,17 @@ public class Main {
         else choice = 10;
         if (choice == 1) {
             blogs();
-            TopicExchange.declareExchange();
+//            TopicExchange.declareExchange();
 //            TopicExchange.declareQueues();
-            String message = "Drink a lot of Water and stay Healthy!";
-            System.out.println("At producer");
-            String routingKey ="health.education";
-            Producer.publishMessage(message, routingKey);
+//            String message = "Drink a lot of Water and stay Healthy!";
+//            System.out.println("At producer");
+//            String routingKey ="health.education";
+//            Producer.publishMessage(message, routingKey);
 
         } else if (choice == 2) {
-            TopicExchange.declareExchange();
-            String queueName = TopicExchange.declareQueues();
-            Consumer.subscribeMessage(queueName);
+//            TopicExchange.declareExchange();
+//            Consumer.subscribeMessage("health.*");
+            new Consumer();
         } else if (choice == 4) {
             new FanOutProducer();
         }
@@ -111,11 +114,25 @@ public class Main {
         //Create a channel - do not share the Channel instance
         Channel channel = ConnectionManager.getConnection().createChannel();
 
+        DataHolder dhealth = new DataHolder("HealthQ","health.*");
+        DataHolder sportsQ = new DataHolder("SportsQ","#.sports.*");
+        DataHolder educationQ = new DataHolder("EducationQ","#.education");
+        dataHolderList.add(dhealth);
+        dataHolderList.add(sportsQ);
+        dataHolderList.add(educationQ);
         //Create the Queues
-        channel.queueDeclare("HealthQ", true, false, false, null);
-        channel.queueDeclare("SportsQ", true, false, false, null);
-        channel.queueDeclare("EducationQ", true, false, false, null);
 
+        for(DataHolder dataHolder : dataHolderList){
+            channel.queueDeclare(dataHolder.getQueueName(), true, false, false, null);
+            channel.queueBind(dataHolder.queueName, EXCHANGE_TOPIC, dataHolder.routingKey);
+        }
+//        channel.queueDeclare(dhealth.getQueueName(), true, false, false, null);
+//        channel.queueDeclare("SportsQ", true, false, false, null);
+//        channel.queueDeclare("EducationQ", true, false, false, null);
+
+//        channel.queueBind("HealthQ", EXCHANGE_TOPIC, "health.*");
+//        channel.queueBind("SportsQ", EXCHANGE_TOPIC, "#.sports.*");
+//        channel.queueBind("EducationQ", EXCHANGE_TOPIC, "#.education");
 
     }
     public static void declareBindings() throws IOException, TimeoutException {

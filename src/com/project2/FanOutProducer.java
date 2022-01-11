@@ -10,12 +10,21 @@ import java.util.concurrent.TimeoutException;
 public class FanOutProducer {
     private static final String EXCHANGE_TOPIC = "topic_logs";
     private static final String EXCHANGE_FANOUT = "logs";
-    public FanOutProducer() throws IOException {
-        //Creating connection the server
-        Channel channel = ConnectionManager.getConnection().createChannel();
-        channel.exchangeDeclare(EXCHANGE_FANOUT, "fanout");
-        channel.exchangeDeclare(EXCHANGE_TOPIC,"topic");
-        
+    public FanOutProducer() throws IOException, TimeoutException {
+
+
+        //Creating connection to the server
+        try (Channel channel = ConnectionManager.getConnection().createChannel()) {
+            channel.exchangeDeclare(EXCHANGE_FANOUT, "fanout");
+            channel.exchangeDeclare(EXCHANGE_TOPIC,"topic");
+            String msg="";
+            String message = msg.length() < 1 ? "info: Hello World" :
+                    String.join(" ", msg);
+
+            channel.basicPublish(EXCHANGE_FANOUT, "", null, message.getBytes("UTF-8"));
+            System.out.println("[x] Sent '" + message + "'");
+
+        }
 
 /*        ConnectionFactory factory = new ConnectionFactory();
 
