@@ -8,15 +8,16 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import static com.project2.Main.dataHolderList;
+import static com.project2.Main.*;
 
 public class FanOutConsumer {
-    private static final String EXCHANGE_FANOUT = "logs";
-    public FanOutConsumer() throws IOException, TimeoutException {
+
+    public FanOutConsumer() {
         try {
             //Creating connection the server
             ConnectionFactory factory = new ConnectionFactory();
@@ -42,9 +43,52 @@ public class FanOutConsumer {
                 System.out.println(" [x] Received '" +
                         delivery.getEnvelope().getRoutingKey() + "':'" + message + "'");
                 DataHolder[] msg = new Gson().fromJson(message,DataHolder[].class);
-                List<DataHolder> list = Arrays.asList(msg);
+                Collections.addAll(dataHolderList, msg);
+                System.out.println(dataHolderList.size());
+                for (DataHolder dataHolder : dataHolderList) {
+                    System.out.println(dataHolder.getQueueName());
+                }
+                //Removing Duplicates;
+                Set<DataHolder> s = new HashSet<DataHolder>(dataHolderList);
+                dataHolderList = new ArrayList<DataHolder>();
+                dataHolderList.addAll(s);
+                //Now the List has only the identical Elements
+
+                System.out.println("above is trying");
+                System.out.println();
+                /*for (DataHolder holder : msg) {
+                    if (!dataHolderList.contains(holder)) {
+                        System.out.println("Test");
+                        dataHolderList.add(holder);
+                    }
+                }*/
+
+/*                List<DataHolder> combinedList = new ArrayList<>();
+                for (List<DataHolder> dataHolders : Arrays.asList(list, dataHolderList)) {
+                    for (DataHolder holder : dataHolders) {
+                        if (!dataHolderList.contains(holder)) {
+                            System.out.println("Test");
+                            combinedList.add(holder);
+                        }
+                    }
+                }
+                for (DataHolder dataHolder : combinedList) {
+                    System.out.println(dataHolder.getQueueName());
+                }
+                System.out.println(combinedList);*/
+/*                dataHolderList.addAll(list);
+                if (!dataHolderList.contains(msg)) {
+                    System.out.println("Test");
+                }
                 dataHolderList = list;
-                for (DataHolder dataHolder : list) {
+
+                for (Object x : list){
+                    if (!dataHolderList.contains(x))
+
+                        dataHolderList.add(new DataHolder(x)));
+                }*/
+//                dataHolderList = list;
+                for (DataHolder dataHolder : dataHolderList) {
                     System.out.println(dataHolder.getQueueName());
                 }
             };
