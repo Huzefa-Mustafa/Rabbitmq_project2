@@ -1,6 +1,9 @@
 package com.project2;
 
+import com.google.gson.Gson;
 import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
