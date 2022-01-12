@@ -1,14 +1,15 @@
 package com.project2;
 
+import com.rabbitmq.client.CancelCallback;
 import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.DefaultConsumer;
+import com.rabbitmq.client.DeliverCallback;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
-
 public class Consumer {
     private static final String EXCHANGE_NAME = "topic_logs";
+    private static Channel channel;
     /**
      * Assign Consumers to each of the Queue.
      *
@@ -18,51 +19,33 @@ public class Consumer {
     public static void subscribeMessage(DataHolder dataHolder) throws IOException, TimeoutException {
 //        TopicExchange.declareExchange();
         String queueName = TopicExchange.declareQueues(dataHolder.getRoutingKey());
-        Channel channel = ConnectionManager.getConnection().createChannel();
-//        String consumerTag = UUID.randomUUID().toString();
-        channel.basicConsume(queueName, true, ((consumerTag, delivery) -> {
+        channel = ConnectionManager.getConnection().createChannel();
+        final String[] dyingConsumerTag = {""};
+
+        DeliverCallback deliverCallback = (consumerTag, delivery) -> {
             System.out.println("\n\n=========== "+ dataHolder.getRoutingKey() +" Tags ==========");
             String message = new String(delivery.getBody(), "UTF-8");
             System.out.println(" [x] Received '" +
                     delivery.getEnvelope().getRoutingKey() + "':'" + message + "'");
             System.out.println("Consumer Tag: " + consumerTag);
             dataHolder.setConsumerTag(consumerTag);
-        }), consumerTag -> {
-            System.out.println("Consumer Tag: " + consumerTag);
-        });
+//            dyingConsumerTag[0] = consumerTag;
+        };
+        CancelCallback cancelCallback = consumerTag -> {
+            System.out.println("Canceled Consumer tag: " + consumerTag);
+        };
+        channel.basicConsume(queueName, true,deliverCallback, cancelCallback);
     }
 
     public static void unsubscribeBlogs(DataHolder dataHolder) throws IOException, TimeoutException {
-
+//        Channel channel =ConnectionManager.getConnection().createChannel();
         System.out.println("test");
 
-
-
-        String queueName = TopicExchange.declareQueues(dataHolder.getRoutingKey());
-        Channel channel = ConnectionManager.getConnection().createChannel();
-//        String consumerTag = UUID.randomUUID().toString();
-        try {
-            channel.basicConsume(queueName, false, ((consumerTag, delivery) -> {
-                System.out.println("\n\n=========== "+ dataHolder.getRoutingKey() +" Tags ==========");
-
-                System.out.println(" [x] Unsubscribed '" +
-                        delivery.getEnvelope().getRoutingKey() + "':'"  );
-                System.out.println("Consumer Tag: " + consumerTag);
-                channel.basicCancel(consumerTag);
-            }), consumerTag -> {
-                System.out.println("Consumer Tag: " + consumerTag);
-            });
-        } catch (IOException e) {
-            System.out.println("Error");
-        }
-
         System.out.println(dataHolder.getConsumerTag());
-        channel.basicCancel(queueName, false, ((consumerTag, delivery) -> {
-        try {
-            channel.basicCancel(dataHolder.getConsumerTag());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        channel.basicCancel(dataHolder.getConsumerTag());
+
+
+
 /*        Consumer consumer = new DefaultConsumer(channel) {
             @Override
             public void handleCancel(String consumerTag) throws IOException {
