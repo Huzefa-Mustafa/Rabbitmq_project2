@@ -8,7 +8,6 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
@@ -44,7 +43,7 @@ public class FanOutConsumer {
                         delivery.getEnvelope().getRoutingKey() + "':'" + message + "'");
                 DataHolder[] msg = new Gson().fromJson(message,DataHolder[].class);
                 List<DataHolder> list = Arrays.asList(msg);
-                list = dataHolderList;
+                dataHolderList = list;
                 for (DataHolder dataHolder : list) {
                     System.out.println(dataHolder.getQueueName());
                 }

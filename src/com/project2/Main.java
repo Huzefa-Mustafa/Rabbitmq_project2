@@ -1,17 +1,15 @@
 package com.project2;
 
-import com.google.gson.Gson;
 import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.TimeoutException;
 
 public class Main {
-     static ArrayList<DataHolder> dataHolderList = new ArrayList<>();
+    static List<DataHolder> dataHolderList = new ArrayList<>();
     /**
      * Execute the methods.
      *
