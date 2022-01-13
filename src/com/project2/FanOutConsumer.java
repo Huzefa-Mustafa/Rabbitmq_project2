@@ -42,19 +42,25 @@ public class FanOutConsumer {
 
 /*                System.out.println(" [x] Received '" +
                         delivery.getEnvelope().getRoutingKey() + "':'" + message + "'");*/
-                DataHolder[] msg = new Gson().fromJson(message,DataHolder[].class);
-                Collections.addAll(dataHolderList, msg);
+                if (message.equals("new")) {
+//                    System.out.println(" [x] Received '" +
+//                            delivery.getEnvelope().getRoutingKey() + "':'" + message + "'");
+                    new FanOutProducer();
+                } else {
+                    DataHolder[] msg = new Gson().fromJson(message,DataHolder[].class);
+                    Collections.addAll(dataHolderList, msg);
 
-                //Removing Duplicates;
-                Set<DataHolder> s = new HashSet<DataHolder>(dataHolderList);
-                dataHolderList = new ArrayList<DataHolder>();
-                dataHolderList.addAll(s);
-                //Now the List has only the identical Elements
+                    //Removing Duplicates;
+                    Set<DataHolder> s = new HashSet<DataHolder>(dataHolderList);
+                    dataHolderList = new ArrayList<DataHolder>();
+                    dataHolderList.addAll(s);
+                    //Now the List has only the identical Elements
+                }
 
 /*                for (DataHolder dataHolder : dataHolderList) {
                     System.out.println(dataHolder.getQueueName());
                 }*/
-                new FanOutProducer();
+//                new FanOutProducer();
             };
             channel.basicConsume(queueName, true, deliverCallback, consumerTag -> { });
         } catch (IOException | TimeoutException e) {

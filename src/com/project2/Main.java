@@ -21,8 +21,9 @@ public class Main {
 
         System.out.println("Before" + dataHolderList.size());
         declareQueues();
-        new FanOutProducer();
+
         new FanOutConsumer();
+        new FanOutProducer("new");
 
         System.out.println("After" + dataHolderList.size());
         consoleInterface();
