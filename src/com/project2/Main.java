@@ -29,10 +29,12 @@ public class Main {
     }
 
     private static void consoleInterface() throws IOException, TimeoutException {
-        while (true) {
-            menuApp();
-            menuSelection();
-        }
+        while (menuSelection()) {}
+
+        ConnectionManager.getConnection().close();
+        System.out.println("Exiting Session...");
+        System.out.println("Connection Close!");
+        System.out.println("Good Bye!");
     }
 
     private static void menuApp() {
@@ -50,11 +52,15 @@ public class Main {
         System.out.println("Your Choice :");
     }
 
-    private static void menuSelection() throws IOException, TimeoutException {
+    private static boolean menuSelection() throws IOException, TimeoutException {
+        menuApp();
         menuChoice = 0;
         String input = scanner.nextLine();
-        if (checkIfDigit(input)) menuChoice = Integer.parseInt(input);
+        if ("q".equalsIgnoreCase(input)) {
+            return false;
+        } else if (checkIfDigit(input)) menuChoice = Integer.parseInt(input);
         else System.out.println("Invalid Command!");
+
         if (menuChoice == 1) {
             //publishBlogs
             DataHolder selectedBlog = getDataHolder();
@@ -72,7 +78,7 @@ public class Main {
             DataHolder selectedTag = getDataHolder();
             if(selectedTag != null) Consumer.unsubscribeBlogs(selectedTag);
         }
-
+        return true;
     }
 
     private static void createBlogs() throws IOException {
