@@ -40,57 +40,21 @@ public class FanOutConsumer {
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                 String message = new String(delivery.getBody());
 
-                System.out.println(" [x] Received '" +
-                        delivery.getEnvelope().getRoutingKey() + "':'" + message + "'");
+/*                System.out.println(" [x] Received '" +
+                        delivery.getEnvelope().getRoutingKey() + "':'" + message + "'");*/
                 DataHolder[] msg = new Gson().fromJson(message,DataHolder[].class);
                 Collections.addAll(dataHolderList, msg);
-                System.out.println(dataHolderList.size());
-                for (DataHolder dataHolder : dataHolderList) {
-                    System.out.println(dataHolder.getQueueName());
-                }
+
                 //Removing Duplicates;
                 Set<DataHolder> s = new HashSet<DataHolder>(dataHolderList);
                 dataHolderList = new ArrayList<DataHolder>();
                 dataHolderList.addAll(s);
                 //Now the List has only the identical Elements
 
-                System.out.println("above is trying");
-                System.out.println();
-                /*for (DataHolder holder : msg) {
-                    if (!dataHolderList.contains(holder)) {
-                        System.out.println("Test");
-                        dataHolderList.add(holder);
-                    }
-                }*/
-
-/*                List<DataHolder> combinedList = new ArrayList<>();
-                for (List<DataHolder> dataHolders : Arrays.asList(list, dataHolderList)) {
-                    for (DataHolder holder : dataHolders) {
-                        if (!dataHolderList.contains(holder)) {
-                            System.out.println("Test");
-                            combinedList.add(holder);
-                        }
-                    }
-                }
-                for (DataHolder dataHolder : combinedList) {
+/*                for (DataHolder dataHolder : dataHolderList) {
                     System.out.println(dataHolder.getQueueName());
-                }
-                System.out.println(combinedList);*/
-/*                dataHolderList.addAll(list);
-                if (!dataHolderList.contains(msg)) {
-                    System.out.println("Test");
-                }
-                dataHolderList = list;
-
-                for (Object x : list){
-                    if (!dataHolderList.contains(x))
-
-                        dataHolderList.add(new DataHolder(x)));
                 }*/
-//                dataHolderList = list;
-                for (DataHolder dataHolder : dataHolderList) {
-                    System.out.println(dataHolder.getQueueName());
-                }
+                new FanOutProducer();
             };
             channel.basicConsume(queueName, true, deliverCallback, consumerTag -> { });
         } catch (IOException | TimeoutException e) {

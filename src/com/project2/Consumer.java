@@ -5,7 +5,6 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DeliverCallback;
 
 import java.io.IOException;
-import java.util.concurrent.TimeoutException;
 
 public class Consumer {
 
@@ -21,19 +20,18 @@ public class Consumer {
             String message = new String(delivery.getBody(), "UTF-8");
             System.out.println(" [x] Received '" +
                     delivery.getEnvelope().getRoutingKey() + "':'" + message + "'");
-            System.out.println("Consumer Tag: " + consumerTag);
             dataHolder.setConsumerTag(consumerTag);
         };
-        CancelCallback cancelCallback = consumerTag -> {
-            System.out.println("Canceled Consumer tag: " + consumerTag);
-        };
+        CancelCallback cancelCallback = consumerTag -> { };
         channel.basicConsume(queueName, true,deliverCallback, cancelCallback);
     }
 
-    public static void unsubscribeBlogs(DataHolder dataHolder) throws IOException {
-
-        System.out.println(dataHolder.getConsumerTag());
-        channel.basicCancel(dataHolder.getConsumerTag());
+    public static void unsubscribeBlogs(DataHolder dataHolder)  {
+        try {
+            channel.basicCancel(dataHolder.getConsumerTag());
+        } catch (IOException e) {
+            System.out.println("Unsubscribed");
+        }
 
     }
 }
