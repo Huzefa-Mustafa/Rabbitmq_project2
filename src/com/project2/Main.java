@@ -13,7 +13,7 @@ public class Main {
     static List<DataHolder> tring = new ArrayList<>();
 
     static Scanner scanner = new Scanner(System.in);
-    static int choice;
+    static int choice, menuChoice;
     static final String EXCHANGE_TOPIC = "topic_logs";
     static final String EXCHANGE_FANOUT = "logs";
 
@@ -23,6 +23,7 @@ public class Main {
         declareQueues();
         new FanOutProducer();
         new FanOutConsumer();
+
         System.out.println("After" + dataHolderList.size());
         consoleInterface();
     }
@@ -38,33 +39,38 @@ public class Main {
         System.out.println("=================================");
         System.out.println("|           APP MENU            |");
         System.out.println("=================================");
-        System.out.println("|Options:                       |");
-        System.out.println("|       1.Publish to blogs      |");
-        System.out.println("|       2.Subscribe to blogs    |");
-        System.out.println("|       3.Create new blog       |");
-        System.out.println("|       4.Unsubscribe to blogs  |");
-        System.out.println("|       0.Exit                  |");
+        System.out.println("|Options:                        |");
+        System.out.println("|       1.Publish to blogs       |");
+        System.out.println("|       2.Subscribe to blog      |");
+        System.out.println("|       3.Create new blog        |");
+        System.out.println("|       4.Unsubscribe from blog  |");
         System.out.println("=================================");
-
+        System.out.println("INFO: Enter 'q' to stop session");
+        System.out.println("Please enter your choice");
+        System.out.println("Your Choice :");
     }
 
     private static void menuSelection() throws IOException, TimeoutException {
+        menuChoice = 0;
         String input = scanner.nextLine();
-        if (checkIfDigit(input)) choice = Integer.parseInt(input);
-        else choice = 10;
-        if (choice == 1) {
-            DataHolder selectedBlog = blogs();
-            Producer.publishMessage(selectedBlog);
-        } else if (choice == 2) {
-            DataHolder selectedTag = subscribeToBlogs();
-            Consumer.subscribeMessage(selectedTag);
-        } else if (choice == 3) {
+        if (checkIfDigit(input)) menuChoice = Integer.parseInt(input);
+        else System.out.println("Invalid Command!");
+        if (menuChoice == 1) {
+            //publishBlogs
+            DataHolder selectedBlog = getDataHolder();
+            if(selectedBlog != null) Producer.publishMessage(selectedBlog);
+        } else if (menuChoice == 2) {
+            //subscribeToBlogs
+            DataHolder selectedTag = getDataHolder();
+            if(selectedTag != null) Consumer.subscribeMessage(selectedTag);
+        } else if (menuChoice == 3) {
+            //createBlogs
             createBlogs();
-
             new FanOutProducer();
-        } else if (choice == 4) {
-            DataHolder selectedTag = unsubscribeBlogs();
-            Consumer.unsubscribeBlogs(selectedTag);
+        } else if (menuChoice == 4) {
+            //unsubscribeBlogs
+            DataHolder selectedTag = getDataHolder();
+            if(selectedTag != null) Consumer.unsubscribeBlogs(selectedTag);
         }
 
     }
@@ -82,42 +88,47 @@ public class Main {
         new FanOutProducer();
     }
 
-    private static DataHolder unsubscribeBlogs() {
-        return getDataHolder();
-    }
-
-    private static DataHolder subscribeToBlogs(){
-        return getDataHolder();
-    }
-
     private static DataHolder getDataHolder() {
-        System.out.println("|Select topics          |");
-        for (int i = 0; i < dataHolderList.size(); i++) {
-            System.out.println("|       " + (i + 1) + "." + dataHolderList.get(i).getRoutingKey() + "       ");
+        while(true){
+            System.out.println("|Select topics          |");
+            for (int i = 0; i < dataHolderList.size(); i++) {
+                System.out.println("|       " + (i + 1) + "." + (
+                        menuChoice != 1 ?
+                        dataHolderList.get(i).getRoutingKey() :
+                        dataHolderList.get(i).getQueueName()) + "       ");
+            }
+
+            System.out.println("INFO: Enter 'q' to go back to menu");
+
+            System.out.println("Please enter your choice");
+
+            System.out.println("Your Choice :");
+
+            String input = scanner.nextLine();
+
+            if (checkIfDigit(input)) {
+
+                choice = Integer.parseInt(input);
+
+                if (choice > dataHolderList.size()) {
+                    System.out.println("Invalid Command!");
+                    continue;
+                }
+                choice = Integer.parseInt(input);
+                DataHolder dataHolder = dataHolderList.get(choice - 1);
+                return dataHolder;
+            }else if ("q".equalsIgnoreCase(input)) {
+                break;
+            } else {
+                System.out.println("Invalid Command!");
+                continue;
+            }
         }
-        String input = scanner.nextLine();
-        if (checkIfDigit(input)) {
-            choice = Integer.parseInt(input);
-            DataHolder dataHolder = dataHolderList.get(choice - 1);
-            return dataHolder;
-        } else choice = 10;
         return null;
+
     }
 
-    private static DataHolder blogs() {
 
-        System.out.println("|Select topics          |");
-        for (int i = 0; i < dataHolderList.size(); i++) {
-            System.out.println("|       " + (i + 1) + "." + dataHolderList.get(i).getQueueName() + "       ");
-        }
-        String input = scanner.nextLine();
-        if (checkIfDigit(input)) {
-            choice = Integer.parseInt(input);
-            DataHolder dataHolder = dataHolderList.get(choice - 1);
-            return dataHolder;
-        } else choice = 10;
-        return null;
-    }
 
     public static void declareQueues() throws IOException {
         //Create a channel - do not share the Channel instance
