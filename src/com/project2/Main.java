@@ -29,7 +29,11 @@ public class Main {
     }
 
     private static void consoleInterface() throws IOException, TimeoutException {
-        while (menuSelection()) {}
+        while (true) {
+            boolean state = menuSelection();
+            if (state == true) continue;
+            else break;
+        }
 
         ConnectionManager.getConnection().close();
         System.out.println("Exiting Session...");
