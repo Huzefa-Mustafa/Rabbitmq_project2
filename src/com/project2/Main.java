@@ -10,7 +10,6 @@ import java.util.concurrent.TimeoutException;
 
 public class Main {
     static List<DataHolder> dataHolderList = new ArrayList<>();
-    static List<DataHolder> tring = new ArrayList<>();
 
     static Scanner scanner = new Scanner(System.in);
     static int choice, menuChoice;
@@ -105,7 +104,7 @@ public class Main {
             for (int i = 0; i < dataHolderList.size(); i++) {
                 System.out.println("|       " + (i + 1) + "." + (
                         menuChoice != 1 ?
-                        dataHolderList.get(i).getRoutingKey() :
+                        dataHolderList.get(i).getList() :
                         dataHolderList.get(i).getQueueName()) + "       ");
             }
 
@@ -142,22 +141,53 @@ public class Main {
 
 
     public static void declareQueues() throws IOException {
+        List<String> testTagList = new ArrayList<String>();
+        List<String> secondTagList = new ArrayList<String>();
         //Create a channel - do not share the Channel instance
         Channel channel = ConnectionManager.getConnection().createChannel();
         TopicExchange.declareExchange();
 
-        DataHolder dhealth = new DataHolder("HealthQ","health.*");
-        DataHolder sportsQ = new DataHolder("SportsQ","#.sports.*");
-        DataHolder educationQ = new DataHolder("EducationQ","#.education");
+        List<String> dhealthTagList = new ArrayList<String>();
+        DataHolder dhealth = new DataHolder("HealthQ",dhealthTagList);
+        dhealthTagList.add("health.*");
+        dhealthTagList.add("*.insurance");
+        dhealthTagList.add("*.insurance");
+        dhealth.setRoutingKey("health.*");
+
+        List<String> sportsQTagList = new ArrayList<String>();
+        DataHolder sportsQ = new DataHolder("SportsQ",sportsQTagList);
+        sportsQTagList.add("#.sports.*");
+//        sportsQ.setRoutingKey("#.sports.*");
+
+        List<String> educationQTagList = new ArrayList<String>();
+        DataHolder educationQ = new DataHolder("EducationQ",educationQTagList);
+        educationQTagList.add("#.education");
+//        educationQ.setRoutingKey("#.education");
+
+        DataHolder test = new DataHolder("Test",testTagList);
+        testTagList.add("FirstKey");
+        testTagList.add("SecondKey");
+        testTagList.add("ThirdKey");
+//        test.setRoutingKey("SecondKey");
+        DataHolder second = new DataHolder("second",secondTagList);
+        secondTagList.add("secondFirstKey");
+        secondTagList.add("secondSecondKey");
+        secondTagList.add("secondThirdKey");
+//        second.setRoutingKey("secondSecondKey");
+
         dataHolderList.add(dhealth);
         dataHolderList.add(sportsQ);
         dataHolderList.add(educationQ);
+        dataHolderList.add(test);
+        dataHolderList.add(second);
 
         //Create the Queues
 
         for(DataHolder dataHolder : dataHolderList){
             channel.queueDeclare(dataHolder.getQueueName(), true, false, false, null);
-            channel.queueBind(dataHolder.queueName, EXCHANGE_TOPIC, dataHolder.routingKey);
+            for ( String routingkey : dataHolder.getList()) {
+                channel.queueBind(dataHolder.queueName, EXCHANGE_TOPIC, routingkey);
+            }
         }
     }
 

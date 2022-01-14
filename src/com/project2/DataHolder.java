@@ -1,10 +1,35 @@
 package com.project2;
 
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static com.project2.Main.dataHolderList;
+
 public class DataHolder {
     String queueName;
     String routingKey;
     String consumerTag;
+    List<String> list;
+
+
+    public DataHolder(String queueName,  List<String> list) {
+        this.queueName = queueName;
+        this.list = list;
+    }
+
+    public List<String> getList() {
+        removeDoublingTags();
+        //Removing Duplicates;
+
+        return list;
+    }
+
+    public void setList(List<String> list) {
+        list.add(routingKey);
+    }
 
     public DataHolder(String queueName, String routingKey) {
         this.queueName = queueName;
@@ -33,14 +58,24 @@ public class DataHolder {
         this.routingKey = routingKey;
     }
 
+    public void removeDoublingTags() {
+        //Removing Duplicates;
+        Set<String> s = new HashSet<String>(list);
+        list = new ArrayList<String>();
+        list.addAll(s);
+        //Now the List has only the identical Elements
+    }
+
     @Override
     public boolean equals(Object obj) {
         // TODO Auto-generated method stub
         if(obj instanceof DataHolder)
         {
             DataHolder temp = (DataHolder) obj;
-            if(this.queueName.equals(temp.queueName) && this.routingKey.equals(temp.routingKey))
+            if (this.queueName.equals(temp.queueName) && this.list.equals(temp.list)) {
+
                 return true;
+            }
         }
         return false;
     }
@@ -48,7 +83,7 @@ public class DataHolder {
     public int hashCode() {
         // TODO Auto-generated method stub
 
-        return (this.queueName.hashCode() + this.routingKey.hashCode());
+        return (this.queueName.hashCode() + this.list.hashCode());
     }
 
 }

@@ -2,6 +2,8 @@ package com.project2;
 
 import com.rabbitmq.client.Channel;
 import java.io.IOException;
+
+import static com.project2.Main.EXCHANGE_FANOUT;
 import static com.project2.Main.EXCHANGE_TOPIC;
 
 public class TopicExchange {
@@ -11,6 +13,7 @@ public class TopicExchange {
         Channel channel = ConnectionManager.getConnection().createChannel();
         //Create Topic Exchange
         channel.exchangeDeclare(EXCHANGE_TOPIC, "topic");
+        channel.exchangeDeclare(EXCHANGE_FANOUT, "fanout");
     }
 
     public static String declareQueues(String bindingKey) throws IOException {

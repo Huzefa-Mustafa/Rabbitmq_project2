@@ -40,8 +40,8 @@ public class FanOutConsumer {
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                 String message = new String(delivery.getBody());
 
-/*                System.out.println(" [x] Received '" +
-                        delivery.getEnvelope().getRoutingKey() + "':'" + message + "'");*/
+                System.out.println(" [x] Received '" +
+                        delivery.getEnvelope().getRoutingKey() + "':'" + message + "'");
                 if (message.equals("new")) {
 //                    System.out.println(" [x] Received '" +
 //                            delivery.getEnvelope().getRoutingKey() + "':'" + message + "'");
@@ -55,11 +55,21 @@ public class FanOutConsumer {
                     dataHolderList = new ArrayList<DataHolder>();
                     dataHolderList.addAll(s);
                     //Now the List has only the identical Elements
+
+
+
                 }
 
-/*                for (DataHolder dataHolder : dataHolderList) {
-                    System.out.println(dataHolder.getQueueName());
-                }*/
+                for (DataHolder dataHolder : dataHolderList) {
+                    System.out.println(dataHolder.getList());
+/*                    Iterator<String> crunchifyIterator = dataHolder.getList().iterator();
+                    while (crunchifyIterator.hasNext()) {
+                        System.out.println(crunchifyIterator.next());
+                    }*/
+                    /*for ( String listPrint : dataHolder.getList()) {
+                        System.out.println(listPrint);
+                    }*/
+                }
 //                new FanOutProducer();
             };
             channel.basicConsume(queueName, true, deliverCallback, consumerTag -> { });
