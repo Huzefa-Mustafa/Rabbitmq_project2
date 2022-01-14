@@ -114,17 +114,6 @@ public class Main {
 
 
             String input = scanner.nextLine();
-            choice = Integer.parseInt(input);
-            DataHolder gettingList = dataHolderList.get(choice - 1);
-            gettingList.getList();
-
-            System.out.println("|Select topics          |");
-            for (int i = 0; i < gettingList.getList().size(); i++) {
-                System.out.println("|       " + (i + 1) + "." + (
-                        gettingList.getList().get(i)) + "       ");
-
-            }
-
             if (checkIfDigit(input)) {
 
                 choice = Integer.parseInt(input);
@@ -133,16 +122,23 @@ public class Main {
                     System.out.println("Invalid Command!");
                     continue;
                 }
-                choice = Integer.parseInt(input);
-
-                gettingList.getList().get(choice - 1);
-                return gettingList;
             }else if ("q".equalsIgnoreCase(input)) {
                 break;
             } else {
                 System.out.println("Invalid Command!");
                 continue;
             }
+            DataHolder selectedTopic = dataHolderList.get(choice - 1);
+
+            System.out.println("|Select Key for  '"+ selectedTopic.getQueueName() +"'         |");
+            for (int i = 0; i < selectedTopic.getList().size(); i++) {
+                System.out.println("|       " + (i + 1) + "." + (
+                        selectedTopic.getList().get(i)) + "       ");
+            }
+
+            int selectedKey = Integer.parseInt(scanner.nextLine());
+            selectedTopic.setRoutingKey(selectedTopic.getList().get(selectedKey-1));
+            return selectedTopic;
         }
         return null;
 
@@ -159,9 +155,9 @@ public class Main {
 
         List<String> dhealthTagList = new ArrayList<String>();
         DataHolder dhealth = new DataHolder("HealthQ",dhealthTagList);
-        dhealthTagList.add("health.*");
-        dhealthTagList.add("*.insurance");
-        dhealthTagList.add("*.insurance");
+        dhealth.addRkToList("health.*");
+        dhealth.addRkToList("*.insurance");
+        dhealth.addRkToList("*.insurance");
         dhealth.setRoutingKey("health.*");
 
 /*        List<String> sportsQTagList = new ArrayList<String>();

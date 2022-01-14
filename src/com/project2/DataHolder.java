@@ -6,8 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static com.project2.Main.dataHolderList;
-
 public class DataHolder {
     String queueName;
     String routingKey;
@@ -27,8 +25,8 @@ public class DataHolder {
         return list;
     }
 
-    public void setList(List<String> list) {
-        list.add(routingKey);
+    public void addRkToList(String rk) {
+        list.add(rk);
     }
 
     public DataHolder(String queueName, String routingKey) {
