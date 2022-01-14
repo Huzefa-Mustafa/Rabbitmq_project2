@@ -70,6 +70,14 @@ public class FanOutConsumer {
                         System.out.println(listPrint);
                     }*/
                 }
+                System.out.println();
+                for (DataHolder dataHolder : dataHolderList) {
+                    if (dataHolder.getQueueName().equals("HealthQ")) {
+                        for (String x : dataHolder.getList()) {
+                            System.out.println(x);
+                        }
+                    }
+                }
 //                new FanOutProducer();
             };
             channel.basicConsume(queueName, true, deliverCallback, consumerTag -> { });

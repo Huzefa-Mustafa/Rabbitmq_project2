@@ -103,8 +103,6 @@ public class Main {
             System.out.println("|Select topics          |");
             for (int i = 0; i < dataHolderList.size(); i++) {
                 System.out.println("|       " + (i + 1) + "." + (
-                        menuChoice != 1 ?
-                        dataHolderList.get(i).getList() :
                         dataHolderList.get(i).getQueueName()) + "       ");
             }
 
@@ -114,7 +112,20 @@ public class Main {
 
             System.out.println("Your Choice :");
 
+
             String input = scanner.nextLine();
+            choice = Integer.parseInt(input);
+            DataHolder gettingList = dataHolderList.get(choice - 1);
+            gettingList.getList();
+            for (String x : gettingList.getList()) {
+                System.out.println(x);
+                System.out.println("|Select topics          |");
+            }
+            for (int i = 0; i < gettingList.getList().size(); i++) {
+                for (String x : gettingList.getList()) {
+                    System.out.println("|       " + (i + 1) + "." + x + "       ");
+                }
+            }
 
             if (checkIfDigit(input)) {
 
