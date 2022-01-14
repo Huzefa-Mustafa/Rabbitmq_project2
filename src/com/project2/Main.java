@@ -117,14 +117,12 @@ public class Main {
             choice = Integer.parseInt(input);
             DataHolder gettingList = dataHolderList.get(choice - 1);
             gettingList.getList();
-            for (String x : gettingList.getList()) {
-                System.out.println(x);
-                System.out.println("|Select topics          |");
-            }
+
+            System.out.println("|Select topics          |");
             for (int i = 0; i < gettingList.getList().size(); i++) {
-                for (String x : gettingList.getList()) {
-                    System.out.println("|       " + (i + 1) + "." + x + "       ");
-                }
+                System.out.println("|       " + (i + 1) + "." + (
+                        gettingList.getList().get(i)) + "       ");
+
             }
 
             if (checkIfDigit(input)) {
@@ -136,8 +134,9 @@ public class Main {
                     continue;
                 }
                 choice = Integer.parseInt(input);
-                DataHolder dataHolder = dataHolderList.get(choice - 1);
-                return dataHolder;
+
+                gettingList.getList().get(choice - 1);
+                return gettingList;
             }else if ("q".equalsIgnoreCase(input)) {
                 break;
             } else {
@@ -165,7 +164,7 @@ public class Main {
         dhealthTagList.add("*.insurance");
         dhealth.setRoutingKey("health.*");
 
-        List<String> sportsQTagList = new ArrayList<String>();
+/*        List<String> sportsQTagList = new ArrayList<String>();
         DataHolder sportsQ = new DataHolder("SportsQ",sportsQTagList);
         sportsQTagList.add("#.sports.*");
 //        sportsQ.setRoutingKey("#.sports.*");
@@ -184,13 +183,13 @@ public class Main {
         secondTagList.add("secondFirstKey");
         secondTagList.add("secondSecondKey");
         secondTagList.add("secondThirdKey");
-//        second.setRoutingKey("secondSecondKey");
+//        second.setRoutingKey("secondSecondKey");*/
 
         dataHolderList.add(dhealth);
-        dataHolderList.add(sportsQ);
+/*        dataHolderList.add(sportsQ);
         dataHolderList.add(educationQ);
         dataHolderList.add(test);
-        dataHolderList.add(second);
+        dataHolderList.add(second);*/
 
         //Create the Queues
 
