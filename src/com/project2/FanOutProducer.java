@@ -21,7 +21,6 @@ public class FanOutProducer {
         //Inserting the IP of a server where machine is running
         factory.setHost("127.0.0.1");
         factory.setPort(5672);
-//        System.out.println(dataHolderList.size());
         //Creating connection to the server
         try (Connection connection = factory.newConnection();
              Channel channel = connection.createChannel()) {
@@ -39,7 +38,6 @@ public class FanOutProducer {
              Channel channel = connection.createChannel()) {
             channel.exchangeDeclare(EXCHANGE_FANOUT, "fanout");
             channel.basicPublish(EXCHANGE_FANOUT, "", null, s.getBytes());
-//            System.out.println("[x] Sent '" + s + "'");
         } catch (IOException | TimeoutException e) {
             e.printStackTrace();
         }

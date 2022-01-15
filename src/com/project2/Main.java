@@ -107,10 +107,6 @@ public class Main {
             for (String routingkey : object.getList()) {
                 channel.queueBind(object.queueName, EXCHANGE_TOPIC, routingkey);
             }
-            for (DataHolder list : dataHolderList) {
-                System.out.println(list.getQueueName()+" "+list.getList());
-            }
-            new FanOutProducer();
 
         } else {
             System.out.println(" [x] Please add tags with spaces related to '" + blogName + "':");
@@ -125,8 +121,8 @@ public class Main {
                 channel.queueBind(object.queueName, EXCHANGE_TOPIC, routingkey);
             }
             dataHolderList.add(object);
-            new FanOutProducer();
         }
+        new FanOutProducer();
     }
 
     private static DataHolder getDataHolder() {
