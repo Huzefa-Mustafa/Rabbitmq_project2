@@ -14,6 +14,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.project2.Main.*;
+import static java.util.Comparator.comparingInt;
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toCollection;
 
 public class FanOutConsumer {
 
@@ -48,27 +51,74 @@ public class FanOutConsumer {
                     new FanOutProducer();
                 } else {
                     DataHolder[] msg = new Gson().fromJson(message,DataHolder[].class);
-                    Collections.addAll(dataHolderList, msg);
+                    List<DataHolder> list = Arrays.asList(msg);
 
-                    //Removing Duplicates;
+
+                    for (DataHolder NewQueueNames : list) {
+                        int i = 0;
+                        for (DataHolder oldQueueNames : dataHolderList) {
+                            if (NewQueueNames.getQueueName().equals(oldQueueNames.getQueueName())) {
+                                for (String tagName : NewQueueNames.getList()) {
+                                    oldQueueNames.addRkToList(tagName);
+                                }
+                                System.out.println("Printing new List");
+                                System.out.println(oldQueueNames.getQueueName() + " " + oldQueueNames.getList());
+                                System.out.println("After adding new list to old");
+                                System.out.println(oldQueueNames.getQueueName()+" "+oldQueueNames.getList());
+                            }
+                        }
+                        ++i;
+                    }
+                    for (DataHolder x : list){
+                        if (!dataHolderList.contains(x))
+                            dataHolderList.add(x);
+                        System.out.println("Difference added from recive list");
+                        System.out.println(x.getQueueName()+" "+x.getList());
+                    }
+                    System.out.println("Final List");
+                    for (DataHolder test : dataHolderList) {
+                        System.out.println("print set ");
+                        System.out.println(test.getQueueName()+" "+test.getList());
+                        System.out.println();
+                    }
+//                    dataHolderList.addAll(list);
+//                    dataHolderList = list;
+                   /* dataHolderList.stream()
+                            .distinct()
+                            .forEach(System.out::println);*/
+//                    for (DataHolder test : uniqueStudentSet) {
+//                        System.out.println("print set ");
+//                        System.out.println(test.getQueueName()+" "+test.getList());
+//                        System.out.println();
+//                    }
+//                    dataHolderList.addAll(uniqueStudentSet);
+//                    Collections.addAll(dataHolderList, msg);
+//                    Removing Duplicates;
                     Set<DataHolder> s = new HashSet<DataHolder>(dataHolderList);
                     dataHolderList = new ArrayList<DataHolder>();
                     dataHolderList.addAll(s);
+                    /*for (DataHolder test : s) {
+                        System.out.println("print set ");
+                        System.out.println(test.getQueueName()+" "+test.getList());
+                        System.out.println();
+                    }*/
+//                    dataHolderList = new ArrayList<DataHolder>();
+//
                     //Now the List has only the identical Elements
 
 
 
                 }
 
-                for (DataHolder dataHolder : dataHolderList) {
+/*                for (DataHolder dataHolder : dataHolderList) {
                     System.out.println(dataHolder.getList());
-/*                    Iterator<String> crunchifyIterator = dataHolder.getList().iterator();
+*//*                    Iterator<String> crunchifyIterator = dataHolder.getList().iterator();
                     while (crunchifyIterator.hasNext()) {
                         System.out.println(crunchifyIterator.next());
-                    }*/
-                    /*for ( String listPrint : dataHolder.getList()) {
+                    }*//*
+                    *//*for ( String listPrint : dataHolder.getList()) {
                         System.out.println(listPrint);
-                    }*/
+                    }*//*
                 }
                 System.out.println();
                 for (DataHolder dataHolder : dataHolderList) {
@@ -77,7 +127,7 @@ public class FanOutConsumer {
                             System.out.println(x);
                         }
                     }
-                }
+                }*/
 //                new FanOutProducer();
             };
             channel.basicConsume(queueName, true, deliverCallback, consumerTag -> { });

@@ -27,6 +27,7 @@ public class DataHolder {
 
     public void addRkToList(String rk) {
         list.add(rk);
+        removeDoublingTags();
     }
 
     public DataHolder(String queueName, String routingKey) {
@@ -70,7 +71,7 @@ public class DataHolder {
         if(obj instanceof DataHolder)
         {
             DataHolder temp = (DataHolder) obj;
-            if (this.queueName.equals(temp.queueName) && this.list.equals(temp.list)) {
+            if (this.queueName.equals(temp.queueName)&& this.list.equals(temp.list) ) {
 
                 return true;
             }

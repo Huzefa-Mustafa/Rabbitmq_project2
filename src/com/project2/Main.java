@@ -3,16 +3,15 @@ package com.project2;
 import com.rabbitmq.client.Channel;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.concurrent.TimeoutException;
 
 public class Main {
     static List<DataHolder> dataHolderList = new ArrayList<>();
+    static List<String> newListTagForBog = new ArrayList<String>();
 
     static Scanner scanner = new Scanner(System.in);
-    static int choice, menuChoice;
+    static int choice, menuChoice,tagChoice;
     static final String EXCHANGE_TOPIC = "topic_logs";
     static final String EXCHANGE_FANOUT = "logs";
 
@@ -86,16 +85,48 @@ public class Main {
     }
 
     private static void createBlogs() throws IOException {
+
+        Boolean queueExisted = false;
         System.out.println(" [x] Please enter a suitable name for your blog:");
         String blogName = scanner.nextLine();
-        System.out.println(" [x] Please add tags with spaces related to '" + blogName + "':");
-        String tag = scanner.nextLine();
-        DataHolder object = new DataHolder(blogName,tag);
-        Channel channel = ConnectionManager.getConnection().createChannel();
-        channel.queueDeclare(object.getQueueName(), false, false, true, null);
-        channel.queueBind(object.queueName, EXCHANGE_TOPIC, object.routingKey);
-        dataHolderList.add(object);
-        new FanOutProducer();
+        DataHolder object =  new DataHolder(blogName,newListTagForBog);
+
+        for (DataHolder queueNames : dataHolderList) {
+            if (blogName.equals(queueNames.getQueueName())) {
+                object = queueNames;
+                queueExisted = true;
+            }
+        }
+        if (queueExisted) {
+            System.out.println(" [x] Please add tags with spaces related to '" + blogName + "':");
+            String tag = scanner.nextLine();
+            object.addRkToList(tag);
+            Channel channel = ConnectionManager.getConnection().createChannel();
+
+            channel.queueDeclare(object.getQueueName(), false, false, true, null);
+            for (String routingkey : object.getList()) {
+                channel.queueBind(object.queueName, EXCHANGE_TOPIC, routingkey);
+            }
+            for (DataHolder list : dataHolderList) {
+                System.out.println(list.getQueueName()+" "+list.getList());
+            }
+            new FanOutProducer();
+
+        } else {
+            System.out.println(" [x] Please add tags with spaces related to '" + blogName + "':");
+            String tag = scanner.nextLine();
+            object = new DataHolder(blogName,newListTagForBog);
+            object.addRkToList(tag);
+
+            Channel channel = ConnectionManager.getConnection().createChannel();
+
+            channel.queueDeclare(object.getQueueName(), false, false, true, null);
+            for ( String routingkey : object.getList()) {
+                channel.queueBind(object.queueName, EXCHANGE_TOPIC, routingkey);
+            }
+            dataHolderList.add(object);
+            new FanOutProducer();
+        }
     }
 
     private static DataHolder getDataHolder() {
@@ -129,15 +160,29 @@ public class Main {
                 continue;
             }
             DataHolder selectedTopic = dataHolderList.get(choice - 1);
-
+            System.out.println(selectedTopic.getList().size());
             System.out.println("|Select Key for  '"+ selectedTopic.getQueueName() +"'         |");
             for (int i = 0; i < selectedTopic.getList().size(); i++) {
                 System.out.println("|       " + (i + 1) + "." + (
                         selectedTopic.getList().get(i)) + "       ");
             }
 
-            int selectedKey = Integer.parseInt(scanner.nextLine());
-            selectedTopic.setRoutingKey(selectedTopic.getList().get(selectedKey-1));
+            String selectedKey = scanner.nextLine();
+            if (checkIfDigit(selectedKey)) {
+
+                tagChoice = Integer.parseInt(selectedKey);
+
+                if (tagChoice > selectedTopic.getList().size()) {
+                    System.out.println("Invalid Command!");
+                    continue;
+                }
+            }else if ("q".equalsIgnoreCase(selectedKey)) {
+                break;
+            } else {
+                System.out.println("Invalid Command!");
+                continue;
+            }
+            selectedTopic.setRoutingKey(selectedTopic.getList().get(tagChoice-1));
             return selectedTopic;
         }
         return null;
@@ -156,7 +201,7 @@ public class Main {
         List<String> dhealthTagList = new ArrayList<String>();
         DataHolder dhealth = new DataHolder("HealthQ",dhealthTagList);
         dhealth.addRkToList("health.*");
-        dhealth.addRkToList("*.insurance");
+        dhealth.addRkToList("health.insurance");
         dhealth.addRkToList("*.insurance");
         dhealth.setRoutingKey("health.*");
 

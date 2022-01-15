@@ -28,7 +28,7 @@ public class FanOutProducer {
             channel.exchangeDeclare(EXCHANGE_FANOUT, "fanout");
             String msg = new Gson().toJson(dataHolderList);
             channel.basicPublish(EXCHANGE_FANOUT, "", null, msg.getBytes());
-//            System.out.println("[x] Sent '" + msg + "'");
+            System.out.println("[x] Sent '" + msg + "'");
         } catch (IOException | TimeoutException e) {
             e.printStackTrace();
         }
