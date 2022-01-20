@@ -84,7 +84,6 @@ public class ConsoleInterface {
                 continue;
             }
             DataHolder selectedTopic = dataHolderList.get(choice - 1);
-            System.out.println(selectedTopic.getList().size());
             System.out.println("|Select Key for  '"+ selectedTopic.getQueueName() +"'         |");
             for (int i = 0; i < selectedTopic.getList().size(); i++) {
                 System.out.println("|       " + (i + 1) + "." + (

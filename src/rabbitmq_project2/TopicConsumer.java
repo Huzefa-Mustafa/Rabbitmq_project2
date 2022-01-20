@@ -18,7 +18,7 @@ public class TopicConsumer {
     public static void subscribeMessage(DataHolder dataHolder) throws IOException {
 
 //        String queueName = Declarations.declareQueues(dataHolder.getRoutingKey());
-        Channel channel = ConnectionManager.getConnection().createChannel();
+        channel = ConnectionManager.getConnection().createChannel();
 //        channel = ConnectionManager.getConnection().createChannel();
         String bindingKey = dataHolder.getRoutingKey();
         String queueName = channel.queueDeclare().getQueue();
