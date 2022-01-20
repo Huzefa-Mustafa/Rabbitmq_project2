@@ -137,7 +137,7 @@ public class ConsoleInterface {
                 return false;
             }
             object.addRkToList(tag);
-            Channel channel = com.project2.ConnectionManager.getConnection().createChannel();
+            Channel channel = ConnectionManager.getConnection().createChannel();
 
             channel.queueDeclare(object.getQueueName(), true, false, false, null);
             for (String routingkey : object.getList()) {
@@ -154,7 +154,7 @@ public class ConsoleInterface {
             object = new DataHolder(blogName,newListTagForBog);
             object.addRkToList(tag);
 
-            Channel channel = com.project2.ConnectionManager.getConnection().createChannel();
+            Channel channel = ConnectionManager.getConnection().createChannel();
 
             channel.queueDeclare(object.getQueueName(), true, false, false, null);
             for ( String routingkey : object.getList()) {
@@ -162,7 +162,7 @@ public class ConsoleInterface {
             }
             dataHolderList.add(object);
         }
-        new com.project2.FanOutProducer();
+        new FanOutProducer();
         return true;
     }
     private static void menuApp() {
