@@ -10,14 +10,16 @@ public class DataHolder {
     String queueName;
     String routingKey;
     String consumerTag;
-    List<String> list;
+    List<String> list = new ArrayList<>();
 
 
     public DataHolder(String queueName, List<String> list) {
         this.queueName = queueName;
         this.list = list;
     }
-
+    public DataHolder(String queueName) {
+        this.queueName = queueName;
+    }
     public List<String> getList() {
         removeDoublingTags();
         //Removing Duplicates;
@@ -26,7 +28,7 @@ public class DataHolder {
     }
 
     public void addRkToList(String rk) {
-        list.add(rk);
+        this.list.add(rk);
         removeDoublingTags();
     }
 

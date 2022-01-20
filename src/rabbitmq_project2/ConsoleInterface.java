@@ -44,8 +44,8 @@ public class ConsoleInterface {
             if(selectedTag != null) TopicConsumer.subscribeMessage(selectedTag);
         } else if (menuChoice == 3) {
             //createBlogs
-            createBlogs();
-            new FanOutProducer();
+//            createBlogs();
+            if (createBlogs()) new FanOutProducer();
         } else if (menuChoice == 4) {
             //unsubscribeBlogs
             DataHolder selectedTag = getDataHolder();
@@ -112,11 +112,15 @@ public class ConsoleInterface {
         return null;
 
     }
-    private static void createBlogs() throws IOException {
+    private static boolean createBlogs() throws IOException {
         List<String> newListTagForBog = new ArrayList<String>();
         Boolean queueExisted = false;
-        System.out.println(" [x] Please enter a suitable name for your blog:");
+        System.out.println(" [x] Please enter a suitable name for your blog (Declaring a queue):");
+        System.out.println("INFO: Enter 'q' to go back to menu");
         String blogName = scanner.nextLine();
+        if ("q".equalsIgnoreCase(blogName)) {
+            return false;
+        }
         DataHolder object =  new DataHolder(blogName,newListTagForBog);
 
         for (DataHolder queueNames : dataHolderList) {
@@ -126,8 +130,12 @@ public class ConsoleInterface {
             }
         }
         if (queueExisted) {
-            System.out.println(" [x] Please add tags with spaces related to '" + blogName + "':");
+            System.out.println(" [x] Please add tags related to '" + blogName + "' (Declaring routing keys):");
+            System.out.println("INFO: Enter 'q' to go back to menu");
             String tag = scanner.nextLine();
+            if ("q".equalsIgnoreCase(tag)) {
+                return false;
+            }
             object.addRkToList(tag);
             Channel channel = com.project2.ConnectionManager.getConnection().createChannel();
 
@@ -137,8 +145,12 @@ public class ConsoleInterface {
             }
 
         } else {
-            System.out.println(" [x] Please add tags with spaces related to '" + blogName + "':");
+            System.out.println(" [x] Please add tags related to '" + blogName + "' (Declaring routing keys):");
+            System.out.println("INFO: Enter 'q' to go back to menu");
             String tag = scanner.nextLine();
+            if ("q".equalsIgnoreCase(tag)) {
+                return false;
+            }
             object = new DataHolder(blogName,newListTagForBog);
             object.addRkToList(tag);
 
@@ -151,6 +163,7 @@ public class ConsoleInterface {
             dataHolderList.add(object);
         }
         new com.project2.FanOutProducer();
+        return true;
     }
     private static void menuApp() {
         System.out.println("=================================");
