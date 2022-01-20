@@ -25,9 +25,9 @@ plugin](https://www.rabbitmq.com/management.html):
 4.lastly, to enable the management plugin we need to reinstall the
 RabbitMQ service. Execute the following sequence of commands to
 reinstall the service:
-▪ rabbitmq-service.bat stop
-▪ rabbitmq-service.bat install
-▪ rabbitmq-service.bat start
+- rabbitmq-service.bat stop
+- rabbitmq-service.bat install
+- rabbitmq-service.bat start
 5. To verify if the management plugin is up and running, start your
 browser and navigate to http://127.0.0.1:15672/
 ▪ Login (Username: guest | Password: guest) 
@@ -39,3 +39,6 @@ Our app uses a different user for rabbitMq therefore you would need to create us
 4) Fill user form (note that the field Tags must be administrator)
 5) Enter Username: **studentx** | Password: **studentx**
 6) Press button Add user
+## Run Project
+1) Add Java client library, dependencies and Gson library given in project folder
+2) Build project and run.
