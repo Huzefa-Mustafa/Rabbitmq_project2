@@ -16,14 +16,9 @@ public class Main {
     static final String EXCHANGE_FANOUT = "logs";
 
     public static void main(String[] args) throws IOException, TimeoutException {
-
-        System.out.println("Before" + dataHolderList.size());
         declareQueues();
-
         new FanOutConsumer();
         new FanOutProducer("new");
-
-        System.out.println("After" + dataHolderList.size());
         consoleInterface();
     }
 
