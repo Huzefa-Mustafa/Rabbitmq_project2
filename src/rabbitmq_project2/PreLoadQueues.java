@@ -7,17 +7,26 @@ import static rabbitmq_project2.Main.dataHolderList;
 public class PreLoadQueues {
 
     static void preLoadQueues() throws IOException {
-//        List<String> queueRoutingKeys = new ArrayList<>();
-        String queueName = "Land";
-        DataHolder dLand = new DataHolder(queueName);
-        dLand.addRkToList("asia.pakistan");
-        dLand.addRkToList("asia.*");
-        dLand.addRkToList("asia.pakistan.karachi");
-        dLand.addRkToList("europe.#");
-        dLand.addRkToList("europe.germany.duisburg");
-        dLand.addRkToList("europe.germany");
 
-        dataHolderList.add(dLand);
+
+        DataHolder europe = new DataHolder("Europe");
+        europe.addRkToList("europe.#");
+        europe.addRkToList("europe.tourism.berlin");
+        europe.addRkToList("europe.germany.berlin");
+        europe.addRkToList("*.tourism.*");
+        europe.addRkToList("*.*.berlin");
+        dataHolderList.add(europe);
+
+        DataHolder asia = new DataHolder("Asia");
+        asia.addRkToList("asia.#");
+        asia.addRkToList("asia.tourism.karachi");
+        asia.addRkToList("asia.pakistan.karachi");
+        asia.addRkToList("*.tourism.*");
+        asia.addRkToList("*.*.karachi");
+        dataHolderList.add(asia);
+
+
+
         Declarations.declareQueues();
 
     }

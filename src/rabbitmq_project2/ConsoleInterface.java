@@ -139,7 +139,7 @@ public class ConsoleInterface {
             object.addRkToList(tag);
             Channel channel = com.project2.ConnectionManager.getConnection().createChannel();
 
-            channel.queueDeclare(object.getQueueName(), false, false, true, null);
+            channel.queueDeclare(object.getQueueName(), true, false, false, null);
             for (String routingkey : object.getList()) {
                 channel.queueBind(object.queueName, EXCHANGE_TOPIC, routingkey);
             }
@@ -156,7 +156,7 @@ public class ConsoleInterface {
 
             Channel channel = com.project2.ConnectionManager.getConnection().createChannel();
 
-            channel.queueDeclare(object.getQueueName(), false, false, true, null);
+            channel.queueDeclare(object.getQueueName(), true, false, false, null);
             for ( String routingkey : object.getList()) {
                 channel.queueBind(object.queueName, EXCHANGE_TOPIC, routingkey);
             }
